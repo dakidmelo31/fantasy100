@@ -130,19 +130,21 @@ class AppDomain extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: initialRoute,
-      theme: OMITheme.lightTheme(),
-      navigatorKey: navigatorKey,
-      darkTheme: OMITheme.darkTheme(),
-      routes: {
-        Dashboard.routeName: (_) => Dashboard(),
-        SplashScreen.routeName: (_) => SplashScreen(),
-        AuthPage.routeName: (_) => AuthPage(),
-        Startup.routeName: (_) => Startup(),
-        ChatOverview.routeName: (_) => ChatOverview()
-      },
+    return ChangeNotifierProvider(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: initialRoute,
+        theme: OMITheme.lightTheme(),
+        navigatorKey: navigatorKey,
+        darkTheme: OMITheme.darkTheme(),
+        routes: {
+          Dashboard.routeName: (_) => Dashboard(),
+          SplashScreen.routeName: (_) => SplashScreen(),
+          AuthPage.routeName: (_) => AuthPage(),
+          Startup.routeName: (_) => Startup(),
+          ChatOverview.routeName: (_) => ChatOverview()
+        },
+      ),
     );
   }
 }

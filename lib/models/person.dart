@@ -151,9 +151,9 @@ class Person {
     Globals.toast("Get Help");
   }
 
-  Future<void> dontGetHelp() async {
+  Future<void> stopAlert() async {
     helpNow = false;
-    Globals.toast("No more help");
+    Globals.toast("Stop Alert");
   }
 
   String toJson() => json.encode(toMap());

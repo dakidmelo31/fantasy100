@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../models/overview.dart';
 import '../utils/globals.dart';
 
-class ChatProvider extends ChangeNotifier {
+class DataProvider extends ChangeNotifier {
   final List<Overview> overviews = [];
 
-  ChatProvider() {
+  DataProvider() {
     loadOverviews();
   }
 
