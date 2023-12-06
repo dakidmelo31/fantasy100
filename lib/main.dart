@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hospital/pages/chat/chat_overview.dart';
 import 'package:hospital/pages/dashboard.dart';
+import 'package:hospital/pages/qr_page.dart';
 import 'package:hospital/pages/startup/auth_page.dart';
 import 'package:hospital/pages/startup/splash_screen.dart';
 import 'package:hospital/pages/startup/startup.dart';
@@ -130,21 +131,20 @@ class AppDomain extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: initialRoute,
-        theme: OMITheme.lightTheme(),
-        navigatorKey: navigatorKey,
-        darkTheme: OMITheme.darkTheme(),
-        routes: {
-          Dashboard.routeName: (_) => Dashboard(),
-          SplashScreen.routeName: (_) => SplashScreen(),
-          AuthPage.routeName: (_) => AuthPage(),
-          Startup.routeName: (_) => Startup(),
-          ChatOverview.routeName: (_) => ChatOverview()
-        },
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: initialRoute,
+      theme: OMITheme.lightTheme(),
+      navigatorKey: navigatorKey,
+      darkTheme: OMITheme.darkTheme(),
+      routes: {
+        Dashboard.routeName: (_) => Dashboard(),
+        SplashScreen.routeName: (_) => SplashScreen(),
+        AuthPage.routeName: (_) => AuthPage(),
+        Startup.routeName: (_) => Startup(),
+        QRPage.routeName: (_) => QRPage(),
+        ChatOverview.routeName: (_) => ChatOverview()
+      },
     );
   }
 }

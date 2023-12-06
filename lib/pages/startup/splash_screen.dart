@@ -1,7 +1,12 @@
+import 'package:concentric_transition/concentric_transition.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hospital/pages/chat/chat_overview.dart';
+import 'package:hospital/pages/qr_page.dart';
 import 'package:hospital/utils/globals.dart';
+
+import '../../main.dart';
+import '../dashboard.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,16 +49,29 @@ class _SplashScreenState extends State<SplashScreen>
   late final AnimationController _animationController;
   late final Animation<double> _mainAnim;
 
+  Future<void> _switchHome() async {
+    Future.delayed(const Duration(seconds: 2), () {
+      navigatorKey.currentState!.pushReplacementNamed(Dashboard.routeName);
+    });
+  }
+
   @override
   void initState() {
+    _switchHome();
     _animationController = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 3400));
+        vsync: this, duration: const Duration(milliseconds: 3400));
 
     _mainAnim = CurvedAnimation(
         parent: _animationController, curve: Curves.fastOutSlowIn);
     _animationController.forward();
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -76,10 +94,28 @@ class _SplashScreenState extends State<SplashScreen>
               left: -(size.height * 2.45) / 2,
             ),
             Center(
-              child: MaterialButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, ChatOverview.routeName),
-                child: Text("How would this work"),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const QRPage(),
+                            ));
+                      },
+                      child: const Text("Scan now")),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MaterialButton(
+                      color: Colors.blue,
+                      onPressed: () =>
+                          Navigator.pushNamed(context, ChatOverview.routeName),
+                      child: const Text("How would this work"),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

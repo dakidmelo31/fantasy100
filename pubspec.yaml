@@ -64,6 +64,7 @@ dependencies:
   intl: ^0.18.1
   restart_app: ^1.2.1
   modal_bottom_sheet: ^2.1.2
+  font_awesome_flutter: ^10.6.0
 
 dev_dependencies:
   flutter_test:
@@ -105,17 +106,23 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Schyler
+    - family: Lato
       fonts:
         - asset: fonts/lato/Lato-Regular.ttf
         - asset: fonts/lato/Lato-Bold.ttf
           weight: 700
+    - family: Roboto
+      fonts:
         - asset: fonts/roboto/Roboto-Regular.ttf
         - asset: fonts/roboto/Roboto-Bold.ttf
           weight: 700
+    - family: Poppins
+      fonts:
         - asset: fonts/poppins/Poppins-Regular.ttf
         - asset: fonts/poppins/Poppins-Bold.ttf
           weight: 700
+    - family: OpenSans
+      fonts:
         - asset: fonts/opensans/OpenSans-Regular.ttf
         - asset: fonts/opensans/OpenSans-Bold.ttf
           weight: 700
