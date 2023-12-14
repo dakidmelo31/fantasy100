@@ -134,6 +134,7 @@ class AppDomain extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,
+      
       theme: OMITheme.lightTheme(),
       navigatorKey: navigatorKey,
       darkTheme: OMITheme.darkTheme(),

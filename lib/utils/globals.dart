@@ -2,9 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+const dir = "assets/lottie";
+
 class Globals {
-  static const primaryColor = Color(0xffff5500);
-  static const backgroundColor = Color(0xfff9f9f9);
+  static const primaryColor = Color(0xff5514CC);
+  static const backgroundColor = Color(0xfffcfcfc);
 
   static const white = Colors.white;
 

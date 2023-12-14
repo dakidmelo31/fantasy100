@@ -82,42 +82,9 @@ class _SplashScreenState extends State<SplashScreen>
         animation: _mainAnim,
         builder: (context, child) => Stack(
           children: [
-            Positioned(
-              child: ClipOval(
-                child: Container(
-                  color: Colors.black,
-                ),
-              ),
-              height: size.height * 2.45,
-              width: size.height * 2.45 * (1 - _mainAnim.value),
-              top: -(size.height * 2.45) / 2,
-              left: -(size.height * 2.45) / 2,
-            ),
             Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const QRPage(),
-                            ));
-                      },
-                      child: const Text("Scan now")),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MaterialButton(
-                      color: Colors.blue,
-                      onPressed: () =>
-                          Navigator.pushNamed(context, ChatOverview.routeName),
-                      child: const Text("How would this work"),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+              child: Text("Splash Screen"),
+            )
           ],
         ),
       ),

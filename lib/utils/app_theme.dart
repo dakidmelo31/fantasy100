@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'globals.dart';
+import 'transitions.dart';
 
 class OMITheme {
   static ThemeData lightTheme() {
