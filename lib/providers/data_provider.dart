@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../models/overview.dart';
@@ -26,5 +29,23 @@ class DataProvider extends ChangeNotifier {
     //     .listen((event) {
     //   notifyListeners();
     // });
+  }
+
+  Future<bool> loadGroups() async {
+    var dio = Dio();
+    var response = await dio.request(
+      'https://fantasy.premierleague.com/api/leagues-classic/1942089/standings/',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      print(json.encode(response.data));
+      return true;
+    } else {
+      print(response.statusMessage);
+    }
+    return false;
   }
 }

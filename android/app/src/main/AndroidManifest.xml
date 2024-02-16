@@ -28,7 +28,7 @@
 
 
     <application
-        android:label="Eco Parking"
+        android:label="Hubble"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"

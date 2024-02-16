@@ -44,7 +44,7 @@ class _QRPageState extends State<QRPage> {
                       tag: "qr_code",
                       child: Card(
                           margin: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 0),
+                              horizontal: 5, vertical: 0),
                           shadowColor: Colors.black.withOpacity(.15),
                           elevation: 16,
                           child: const MyCode()))),

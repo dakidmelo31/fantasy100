@@ -46,21 +46,21 @@ dependencies:
   lottie: ^2.6.0
   image_picker: ^1.0.4
   permission_handler: ^11.0.1
-  firebase_storage: ^11.5.2
+  firebase_storage: ^11.5.6
   vibration: ^1.8.3
   faker: ^2.1.0
   flutter_barcode_scanner: ^2.0.0
   fluttertoast: ^8.2.4
   image_gallery_saver: ^2.0.3
   share_plus: ^7.2.1
-  flutter_local_notifications: ^16.1.0
+  flutter_local_notifications: ^16.3.2
   local_auth: ^2.1.7
   qr_flutter: ^4.1.0
   flutter_secure_storage: ^9.0.0
   location: ^5.0.3
   timeago: ^3.6.0
   google_fonts: ^6.1.0
-  firebase_messaging: ^14.7.5
+  firebase_messaging: ^14.7.14
   intl: ^0.18.1
   restart_app: ^1.2.1
   modal_bottom_sheet: ^2.1.2
@@ -68,6 +68,17 @@ dependencies:
   google_maps_flutter: ^2.5.0
   count_up_flutter: ^0.0.5
   slide_countdown: ^1.5.0
+  shared_preferences: ^2.2.2
+  ntp: ^2.0.0
+  firebase_auth: ^4.15.3
+  jiffy: ^6.2.1
+  circular_profile_avatar: ^2.0.5
+  provider: ^6.1.1
+  image_cropper: ^5.0.1
+  dotted_border: ^2.1.0
+  uuid: ^4.2.2
+  http: ^1.1.0
+  flutter_timezone: ^1.0.8
 
 dev_dependencies:
   flutter_test:

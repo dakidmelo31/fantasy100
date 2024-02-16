@@ -1,0 +1,28 @@
+TextFormField(
+                                          validator: (value) {
+                                            if (value == null ||
+                                                value.isEmpty ||
+                                                value.toString().length < 9) {
+                                              return "Enter Valid phone number";
+                                            }
+                                            return null;
+                                          },
+                                          controller: _phoneController,
+                                          style: GoogleFonts.orbitron(
+                                              color: Globals.black),
+                                          maxLength: 9,
+                                          maxLines: 1,
+                                          keyboardType: TextInputType.phone,
+                                          textInputAction: TextInputAction.next,
+                                          decoration: InputDecoration(
+                                            prefixIcon: const Icon(
+                                                Icons.phone_iphone_rounded),
+                                            label: Text(
+                                              "+237",
+                                              style: GoogleFonts.orbitron(),
+                                            ),
+                                            border: InputBorder.none,
+                                            filled: true,
+                                            fillColor: Colors.white,
+                                          ),
+                                        )

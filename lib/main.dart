@@ -1,105 +1,217 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hospital/pages/chat/chat_overview.dart';
 import 'package:hospital/pages/dashboard.dart';
+import 'package:hospital/pages/empty_page.dart';
 import 'package:hospital/pages/qr_page.dart';
 import 'package:hospital/pages/startup/auth_page.dart';
 import 'package:hospital/pages/startup/splash_screen.dart';
 import 'package:hospital/pages/startup/startup.dart';
 import 'package:hospital/utils/app_theme.dart';
+import 'package:hospital/utils/transitions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
-String? initialRoute;
-
-final navigatorKey = GlobalKey<NavigatorState>();
-final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+import 'utils/globals.dart';
 
 int id = 0;
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  if (false) await Firebase.initializeApp();
-
-  print("Handling a background message: ${message.messageId}");
-}
-
-@pragma('vm:entry-point')
-void notificationTapBackground(NotificationResponse notificationResponse) {
-  // handle action
-}
+String? selectedNotificationPayload;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+final StreamController<ReceivedNotification> didReceiveNotificationStream =
+    StreamController<ReceivedNotification>.broadcast();
 
-final DarwinInitializationSettings initializationSettingsDarwin =
-    DarwinInitializationSettings(
-  // ...
-  notificationCategories: [
-    DarwinNotificationCategory(
-      'demoCategory',
-      actions: <DarwinNotificationAction>[
-        DarwinNotificationAction.plain('id_1', 'Action 1'),
-        DarwinNotificationAction.plain(
-          'id_2',
-          'Action 2',
-          options: <DarwinNotificationActionOption>{
-            DarwinNotificationActionOption.destructive,
-          },
-        ),
-        DarwinNotificationAction.plain(
-          'id_3',
-          'Action 3',
-          options: <DarwinNotificationActionOption>{
-            DarwinNotificationActionOption.foreground,
-          },
-        ),
-      ],
-      options: <DarwinNotificationCategoryOption>{
-        DarwinNotificationCategoryOption.hiddenPreviewShowTitle,
-      },
-    )
-  ],
-);
+final StreamController<String?> selectNotificationStream =
+    StreamController<String?>.broadcast();
 
-// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-const AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('ic_launcher');
+const MethodChannel platform = MethodChannel("ndoyeeffect.online/bidwars237");
 
-final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsDarwin,
-    linux: null);
+class ReceivedNotification {
+  final int id;
+  final String? title;
+  final String? payload;
+  final String? body;
 
-void onDidReceiveLocalNotification(
-    int id, String title, String? body, String? payload) async {
-  // display a dialog with the notification details, tap ok to go to another page
+  ReceivedNotification(
+      {required this.payload,
+      required this.id,
+      required this.title,
+      required this.body});
 }
 
-Future<void> _showNotificationWithActions() async {
-  const AndroidNotificationDetails androidNotificationDetails =
-      AndroidNotificationDetails(
-    '...',
-    '...',
-    actions: <AndroidNotificationAction>[
-      AndroidNotificationAction('id_1', 'Action 1'),
-      AndroidNotificationAction('id_2', 'Action 2'),
-      AndroidNotificationAction('id_3', 'Action 3'),
-    ],
+/// A notification action which triggers a url launch event
+const String urlLaunchActionId = 'id_1';
+
+/// A notification action which triggers a App navigation event
+const String navigationActionId = 'id_3';
+
+/// Defines a iOS/MacOS notification category for text input actions.
+const String darwinNotificationCategoryText = 'textCategory';
+
+/// Defines a iOS/MacOS notification category for plain actions.
+const String darwinNotificationCategoryPlain = 'plainCategory';
+
+bool setupComplete = false;
+
+final navigatorKey = GlobalKey<NavigatorState>();
+String initialRoute = SplashScreen.routeName;
+
+Future<void> getTime() async {
+  // Globals.globalTime = await NTP.now();
+}
+
+final FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+@pragma("vm:entry-point")
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  debugPrint("notificationTapBackground function called");
+
+  debugPrint(
+      "Notification Response: id: ${notificationResponse.id} input: ${notificationResponse.input}, Payload: ${notificationResponse.payload}");
+}
+
+Future<void> setupFirebaseMessaging() async {
+  await messaging.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
   );
-  const NotificationDetails notificationDetails =
-      NotificationDetails(android: androidNotificationDetails);
-  await flutterLocalNotificationsPlugin.show(
-      0, '...', '...', notificationDetails);
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await setupFirebaseMessaging();
+  showFlutterNotification(message);
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  print('Handling a background message ${message.messageId}');
+}
+
+void showFlutterNotification(RemoteMessage message) {
+  debugPrint("Remote Message $message");
+  debugPrint("Remote Message ${message.data}");
+
+  selectedNotificationPayload = message.data['payload'];
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+  if (notification != null && android != null && !kIsWeb) {
+    String title = message.notification!.title!;
+    String body = message.notification!.body!;
+    String payload = message.data['payload'];
+    String image = message.data['image'];
+
+    debugPrint("Notification Opened App: $payload");
+    List<String> data = payload.split("##");
+    if (data[1] == 'msg') {
+      Globals.msgNotification(payload, title: title, body: body, image: image);
+    } else {}
+  }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // localAuth = LocalAuthentication();
+  Future.delayed(const Duration(minutes: 5), getTime);
+
+  await _configureLocalTimeZone();
+  final prefs = await SharedPreferences.getInstance();
+
+  //disable printing
+  if (kReleaseMode) {
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
+  //Push notification setup
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
+          Platform.isLinux
+      ? null
+      : await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+
+  initialRoute = SplashScreen.routeName;
+
+  if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+    selectedNotificationPayload =
+        notificationAppLaunchDetails!.notificationResponse?.payload;
+    initialRoute = EmptyPage.routeName;
+  }
+
+  const AndroidInitializationSettings androidInitializationSettings =
+      AndroidInitializationSettings("ic_launcher");
+  final List<DarwinNotificationCategory> darwinNotificationCategories =
+      <DarwinNotificationCategory>[
+    DarwinNotificationCategory(darwinNotificationCategoryText, actions: [
+      DarwinNotificationAction.text("id_1", "Make Offer",
+          buttonTitle: "Offer", placeholder: "amount")
+    ]),
+    DarwinNotificationCategory(darwinNotificationCategoryPlain,
+        actions: <DarwinNotificationAction>[
+          DarwinNotificationAction.plain('id_1', 'Action 1'),
+          DarwinNotificationAction.plain(
+            'id_2',
+            'Close',
+            options: <DarwinNotificationActionOption>{
+              DarwinNotificationActionOption.destructive,
+            },
+          ),
+        ]),
+  ];
+
+  final DarwinInitializationSettings darwinInitializationSettings =
+      DarwinInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+          onDidReceiveLocalNotification: (id, title, body, payload) {
+            didReceiveNotificationStream.add(ReceivedNotification(
+                payload: payload, id: id, title: title, body: body));
+          },
+          notificationCategories: darwinNotificationCategories);
+  final InitializationSettings initializationSettings = InitializationSettings(
+      android: androidInitializationSettings,
+      iOS: darwinInitializationSettings);
+
+  //Initializing flutter Local Notification Plugin
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
+    switch (notificationResponse.notificationResponseType) {
+      case NotificationResponseType.selectedNotification:
+        selectNotificationStream.add(notificationResponse.payload);
+
+        navigatorKey.currentState?.push(
+            RightTransition(child: EmptyPage(notificationResponse.payload)));
+        debugPrint("Notification got selected");
+        break;
+
+      case NotificationResponseType.selectedNotificationAction:
+        if (notificationResponse.actionId == navigationActionId) {
+          selectNotificationStream.add(notificationResponse.payload);
+        }
+        if (notificationResponse.input != null) {
+          if (notificationResponse.input!.isNotEmpty) {
+            debugPrint("You sent: ${notificationResponse.input!}");
+          }
+        }
+        debugPrint("${notificationResponse.payload}");
+        debugPrint("Notification Action got selected");
+        break;
+    }
+  }, onDidReceiveBackgroundNotificationResponse: notificationTapBackground);
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -111,16 +223,6 @@ void main() async {
       statusBarColor: Colors.transparent,
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.dark));
-
-  //Handling notifications
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse:
-        (NotificationResponse notificationResponse) async {
-      // ...
-    },
-    onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
-  );
 
   runApp(const AppDomain());
 }
@@ -134,18 +236,27 @@ class AppDomain extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,
-      
       theme: OMITheme.lightTheme(),
       navigatorKey: navigatorKey,
       darkTheme: OMITheme.darkTheme(),
       routes: {
         Dashboard.routeName: (_) => Dashboard(),
-        SplashScreen.routeName: (_) => SplashScreen(),
+        SplashScreen.routeName: (_) => SplashScreen(null),
         AuthPage.routeName: (_) => AuthPage(),
         Startup.routeName: (_) => Startup(),
         QRPage.routeName: (_) => QRPage(),
-        ChatOverview.routeName: (_) => ChatOverview()
+        EmptyPage.routeName: (_) => EmptyPage(null),
+        ChatOverview.routeName: (_) => const ChatOverview()
       },
     );
   }
+}
+
+Future<void> _configureLocalTimeZone() async {
+  if (kIsWeb || Platform.isLinux) {
+    return;
+  }
+  tz.initializeTimeZones();
+  final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
 }
