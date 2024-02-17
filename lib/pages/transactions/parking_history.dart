@@ -56,8 +56,9 @@ class _ParkingHistoryState extends State<ParkingHistory>
                 parent: AlwaysScrollableScrollPhysics()),
             padding: const EdgeInsets.only(bottom: 80),
             itemBuilder: (context, index) {
-              return ParkingTile(
+              return PlayerTile(
                 index: index,
+                score: "10",
                 callback: () {
                   debugPrint("Here once more");
                   _animationController.forward();

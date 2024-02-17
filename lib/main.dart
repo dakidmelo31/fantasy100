@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +21,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 
+import 'firebase_options.dart';
 import 'utils/globals.dart';
 
 int id = 0;
@@ -123,6 +123,8 @@ void showFlutterNotification(RemoteMessage message) {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // localAuth = LocalAuthentication();

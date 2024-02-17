@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.20"
+  animator:
+    dependency: "direct main"
+    description:
+      name: animator
+      sha256: b443e888b72b77a96d1e57a2190e42a0d46948e942fcfd7aed9c47dde2f446c6
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.3.0"
   archive:
     dependency: transitive
     description:
@@ -193,6 +201,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  date_count_down:
+    dependency: "direct main"
+    description:
+      name: date_count_down
+      sha256: "89b87807a8307c03e0ee25e60175fe86667c9e8e1231032b4d4e76389fb95c80"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   dbus:
     dependency: transitive
     description:
@@ -398,6 +414,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_animate:
+    dependency: "direct main"
+    description:
+      name: flutter_animate
+      sha256: "7c8a6594a9252dad30cc2ef16e33270b6248c4dedc3b3d06c86c4f3f4dc05ae5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.0"
   flutter_animator:
     dependency: "direct main"
     description:
@@ -422,6 +446,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
+  flutter_countdown_timer:
+    dependency: "direct main"
+    description:
+      name: flutter_countdown_timer
+      sha256: dfcbd7d6f76a5589f78f3f3ba2f9ea2e199368eccc1adce4153ce985b9587bc5
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -462,6 +494,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0+1"
+  flutter_localizations:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -518,6 +555,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  flutter_shaders:
+    dependency: transitive
+    description:
+      name: flutter_shaders
+      sha256: "02750b545c01ff4d8e9bbe8f27a7731aa3778402506c67daa1de7f5fc3f4befe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -560,6 +605,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  google_identity_services_web:
+    dependency: transitive
+    description:
+      name: google_identity_services_web
+      sha256: "0c56c2c5d60d6dfaf9725f5ad4699f04749fb196ee5a70487a46ef184837ccf6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0+2"
   google_maps:
     dependency: transitive
     description:
@@ -608,6 +661,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.4+1"
+  google_sign_in:
+    dependency: "direct main"
+    description:
+      name: google_sign_in
+      sha256: "0b8787cb9c1a68ad398e8010e8c8766bfa33556d2ab97c439fb4137756d7308f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.1"
+  google_sign_in_android:
+    dependency: transitive
+    description:
+      name: google_sign_in_android
+      sha256: bfd42c81c30c6faba16e0f62968d5505a87504aaa672b3155ee931461abb0a49
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.21"
+  google_sign_in_ios:
+    dependency: transitive
+    description:
+      name: google_sign_in_ios
+      sha256: a7d653803468d30b82ceb47ea00fe86d23c56e63eb2e5c2248bb68e9df203217
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.7.4"
+  google_sign_in_platform_interface:
+    dependency: transitive
+    description:
+      name: google_sign_in_platform_interface
+      sha256: "1f6e5787d7a120cc0359ddf315c92309069171306242e181c09472d1b00a2971"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.5"
+  google_sign_in_web:
+    dependency: transitive
+    description:
+      name: google_sign_in_web
+      sha256: a278ea2d01013faf341cbb093da880d0f2a552bbd1cb6ee90b5bebac9ba69d77
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.12.3+2"
   html:
     dependency: transitive
     description:
@@ -896,6 +989,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  navigation_builder:
+    dependency: transitive
+    description:
+      name: navigation_builder
+      sha256: "95e25150191d9cd4e4b86504f33cd9e786d1e6732edb2e3e635bbedc5ef0dea7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   nested:
     dependency: transitive
     description:
@@ -1237,6 +1338,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.1"
+  states_rebuilder:
+    dependency: transitive
+    description:
+      name: states_rebuilder
+      sha256: bf1a5ab5c543acdefce35e60f482eb7ab592339484fe3266d147ee597f18dc92
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.3.0"
   stream_channel:
     dependency: transitive
     description:
@@ -1422,5 +1531,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.2.0 <4.0.0"
-  flutter: ">=3.10.0"
+  dart: ">=3.2.3 <4.0.0"
+  flutter: ">=3.16.6"

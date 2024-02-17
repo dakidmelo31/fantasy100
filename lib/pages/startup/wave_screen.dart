@@ -96,10 +96,10 @@ class _WaveScreenState extends State<WaveScreen> with TickerProviderStateMixin {
                     duration: Duration(milliseconds: 1200),
                     curve: Curves.fastLinearToSlowEaseIn,
                     child: Text(
-                      "HUBBLE",
+                      "Fantasy100",
                       style: GoogleFonts.acme(
                           fontWeight: FontWeight.w300,
-                          fontSize: 70,
+                          fontSize: 40,
                           color: Globals.primaryColor),
                     ),
                   ),

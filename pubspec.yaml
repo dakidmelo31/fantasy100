@@ -79,6 +79,11 @@ dependencies:
   uuid: ^4.2.2
   http: ^1.1.0
   flutter_timezone: ^1.0.8
+  date_count_down: ^3.0.0
+  flutter_countdown_timer: ^4.1.0
+  google_sign_in: ^6.2.1
+  animator: ^3.3.0
+  flutter_animate: ^4.5.0
 
 dev_dependencies:
   flutter_test:

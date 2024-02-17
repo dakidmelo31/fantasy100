@@ -28,7 +28,8 @@
 
 
     <application
-        android:label="Hubble"
+    android:enableOnBackInvokedCallback="true"
+        android:label="Fantasy100"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"

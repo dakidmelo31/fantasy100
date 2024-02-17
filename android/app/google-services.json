@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "496125219501",
+    "project_id": "fantasy100",
+    "storage_bucket": "fantasy100.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:496125219501:android:c9acc9ec9af02b5eea2c24",
+        "android_client_info": {
+          "package_name": "com.example.hospital"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbhrJyAinSPNm6Va97kL38RdJXvWJWeFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

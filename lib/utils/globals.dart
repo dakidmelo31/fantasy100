@@ -1,14 +1,19 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:vibration/vibration.dart';
 import 'package:http/http.dart' as http;
@@ -17,8 +22,82 @@ import '../main.dart';
 
 const dir = "assets/lottie";
 
+Future<void> toast(
+    {required String message,
+    Color? backgroundColor = Colors.black,
+    Color? textColor = Colors.white,
+    ToastGravity? toastPosition,
+    Toast length = Toast.LENGTH_SHORT}) async {
+  if (message.isEmpty ||
+      message.toUpperCase() == "PAYMENT" ||
+      message.toUpperCase() == "USER HAS BEEN NOTIFIED") {
+    return;
+  }
+
+  Fluttertoast.cancel();
+  Fluttertoast.showToast(
+      msg: message,
+      textColor: textColor,
+      backgroundColor: backgroundColor,
+      toastLength: length,
+      gravity: toastPosition);
+}
+
+FirebaseMessaging messaging = FirebaseMessaging.instance;
+const IP = "192.168.220.230";
+
 class Globals {
-  static const primaryColor = Color(0xff5514CC);
+  static const appName = "Fantasy100";
+
+  static Future<void> sendGeneralNotification(
+      {required String title,
+      required String receiverID,
+      required String message,
+      required String image,
+      required String ticketID,
+      String type = ''}) async {
+    var dio = Dio();
+    const storage = FlutterSecureStorage();
+    final jwt = await storage.read(key: "jwt");
+    dio.options.headers["x-access-token"] = jwt.toString();
+    debugPrint("My id: ${auth.currentUser?.uid}");
+    debugPrint("JWT: $jwt");
+
+    debugPrint("URL: ${'https://$IP/api/v2/general'}");
+    var res = await dio.post('https://$IP/api/v2/general', data: {
+      "userID": auth.currentUser!.uid,
+      "ticketID": ticketID,
+      "receiverID": receiverID,
+      "bidID": receiverID,
+      "image": image,
+      "type": type,
+      "title": title,
+      "description": message,
+    }).catchError((onError) {
+      debugPrint("Error found: $onError");
+      return onError;
+    });
+    var json = res.data as Map<String, dynamic>;
+    debugPrint(res.toString());
+    // toast(message: json["message"], length: Toast.LENGTH_LONG);
+    // debugPrint("$res");
+
+    // late Map payload;// = json.decode(ascii.decode(base64.decode(base64.normalize(jwt.split(".")[1]))));
+  }
+
+  static String referralCodeGen({int len = 8}) {
+    final Random random = Random();
+    const String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    String result = '';
+
+    for (int i = 0; i < len; i++) {
+      result += chars[random.nextInt(chars.length)];
+    }
+
+    return result;
+  }
+
+  static const primaryColor = Color(0xffDD1C1A);
   static const backgroundColor = Color(0xfffcfcfc);
 
   static const white = Colors.white;
@@ -42,13 +121,24 @@ class Globals {
       fontFamily: "Lato",
       fontSize: 16,
       fontWeight: FontWeight.w800);
+  static const primaryText = TextStyle(
+      color: primaryColor,
+      fontFamily: "Lato",
+      fontSize: 16,
+      fontWeight: FontWeight.w800);
+  static const whiteTile = TextStyle(
+      color: Colors.white,
+      fontFamily: "Lato",
+      fontSize: 16,
+      fontWeight: FontWeight.w800);
   static const whiteTextBigger =
       TextStyle(color: Colors.white, fontFamily: "Lato", fontSize: 26);
 
   static const mainDuration = Duration(milliseconds: 700);
   static const revDuration = Duration(milliseconds: 300);
 
-  static const black = Color(0xff000000);
+  static const black = Color(0xff030027);
+  static const lightBlack = Color(0xff03012C);
   static const transparent = Color(0x00000000);
 
   static const timeText =
@@ -60,9 +150,22 @@ class Globals {
       fontWeight: FontWeight.w700);
   static const whiteHeading = TextStyle(
       fontFamily: "Lato",
-      fontSize: 16,
+      fontSize: 26,
       color: Colors.white,
       fontWeight: FontWeight.w400);
+
+  static const mainDurationLonger = Duration(milliseconds: 1200);
+  // static const mainDuration = Duration(milliseconds: 800);
+
+  static Future<void> flipSettings({required String field}) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(field)) {
+      prefs.remove(field);
+    } else {
+      prefs.setBool(field, true);
+    }
+  }
+
   static Future<void> showNotification() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -466,6 +569,8 @@ class Globals {
       payload: payload,
     );
   }
+
+  static void signup(String phone) {}
 }
 
 Size getSize(BuildContext context) {
@@ -485,7 +590,7 @@ Widget scanning = Lottie.asset(
   filterQuality: FilterQuality.high,
 );
 Widget mainLoader = Lottie.asset(
-  "assets/lottie/load2.json",
+  "assets/lottie/load1.json",
   fit: BoxFit.contain,
   filterQuality: FilterQuality.high,
 );

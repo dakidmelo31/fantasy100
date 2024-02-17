@@ -9,16 +9,21 @@ import 'package:jiffy/jiffy.dart';
 
 import '../utils/globals.dart';
 
-class ParkingTile extends StatefulWidget {
-  ParkingTile({super.key, required this.index, required this.callback});
+class PlayerTile extends StatefulWidget {
+  PlayerTile(
+      {super.key,
+      required this.index,
+      required this.callback,
+      required this.score});
   final VoidCallback callback;
+  final String score;
   int index;
 
   @override
-  State<ParkingTile> createState() => _ParkingTileState();
+  State<PlayerTile> createState() => _PlayerTileState();
 }
 
-class _ParkingTileState extends State<ParkingTile> {
+class _PlayerTileState extends State<PlayerTile> {
   late bool test;
   @override
   void initState() {
@@ -86,33 +91,28 @@ class _ParkingTileState extends State<ParkingTile> {
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
-                        "Marounie Local Mall",
+                        "Mr Melo FC",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Globals.title,
                       ),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0, right: 4),
                           child: Text(
-                            test ? "N\$ 50.0" : 'Free',
+                            widget.index.toString(),
                             style: TextStyle(
-                                color: !test
-                                    ? Color(0xff00aa00)
-                                    : Globals.primaryColor,
+                                color: const Color(0xff00aa00),
                                 fontWeight: FontWeight.w600),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 4),
+                          padding: const EdgeInsets.only(left: 0.0, right: 4),
                           child: Text(
-                            Jiffy.parseFromDateTime(
-                                    DateTime.now().subtract(Duration(days: 65)))
-                                .yMEd
-                                .toString(),
+                            "Ndoye Philip Ndula",
                             style: TextStyle(
                                 color: Color(0xffaaaaaa),
                                 fontWeight: FontWeight.w400),
@@ -137,7 +137,7 @@ class _ParkingTileState extends State<ParkingTile> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "2h",
+                        widget.score,
                         style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
