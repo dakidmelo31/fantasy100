@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hospital/pages/chat/chat_overview.dart';
 import 'package:hospital/pages/dashboard.dart';
 import 'package:hospital/pages/empty_page.dart';
@@ -137,6 +138,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
 
   googleToken = prefs.getString("userToken") ?? '';
+
   toast(message: googleToken);
 
   // if (googleToken.trim().isNotEmpty) {

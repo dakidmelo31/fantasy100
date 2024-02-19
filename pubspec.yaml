@@ -38,7 +38,7 @@ dependencies:
   flutter_animator: ^3.2.2
   cached_network_image: ^3.3.0
   path_provider: ^2.1.1
-  sqflite: ^2.3.0
+  sqflite: ^2.3.2
   dio: ^5.3.4
   firebase_core: ^2.23.0
   concentric_transition: ^1.0.3
@@ -84,6 +84,7 @@ dependencies:
   google_sign_in: ^6.2.1
   animator: ^3.3.0
   flutter_animate: ^4.5.0
+  google_generative_ai: ^0.2.0
 
 dev_dependencies:
   flutter_test:

@@ -170,7 +170,7 @@ class Globals {
 
   static const mainDurationLonger = Duration(milliseconds: 1200);
   // static const mainDuration = Duration(milliseconds: 800);
-
+  static const gemini = "AIzaSyC63F6E_pUls-zyvkU5I7zKCj1Muv3d9ek";
   static Future<void> flipSettings({required String field}) async {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey(field)) {
