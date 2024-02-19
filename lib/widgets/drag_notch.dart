@@ -19,23 +19,6 @@ class _DragNotchState extends State<DragNotch> {
   Widget build(BuildContext context) {
     final size = getSize(context);
     return DraggableCard(
-      child: AnimatedContainer(
-        duration: Duration(
-          milliseconds: 300,
-        ),
-        curve: Curves.fastLinearToSlowEaseIn,
-        height: 52.0,
-        width: size.width,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(text, style: TextStyle(color: Colors.white)),
-            Text("306",
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
       pullDown: widget.pullDown,
       pullUp: widget.pullUp,
       switchText: () {
@@ -54,6 +37,23 @@ class _DragNotchState extends State<DragNotch> {
           switchText = !switchText;
         });
       },
+      child: AnimatedContainer(
+        duration: const Duration(
+          milliseconds: 300,
+        ),
+        curve: Curves.fastLinearToSlowEaseIn,
+        height: 52.0,
+        width: size.width,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(text, style: const TextStyle(color: Colors.white)),
+            const Text("306",
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -155,7 +155,7 @@ class _DraggableCardState extends State<DraggableCard>
             surfaceTintColor: Colors.white,
             elevation: 20,
             shadowColor: Colors.grey.withOpacity(.2),
-            color: Color(0xff1A1423),
+            color: Globals.brown,
             shape: Globals.radius(10),
             child: InkWell(
               splashColor: Globals.black,

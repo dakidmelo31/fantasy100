@@ -21,11 +21,11 @@ class _WaveScreenState extends State<WaveScreen> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 800))
-          ..forward();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 800))
+      ..forward();
     Future.delayed(
-      Duration(seconds: 1),
+      const Duration(seconds: 1),
       () {
         setState(() {
           _flip = true;
@@ -33,7 +33,7 @@ class _WaveScreenState extends State<WaveScreen> with TickerProviderStateMixin {
       },
     );
     Future.delayed(
-      Duration(seconds: 2),
+      const Duration(seconds: 2),
       () {
         setState(() {
           _flip2 = true;
@@ -86,17 +86,17 @@ class _WaveScreenState extends State<WaveScreen> with TickerProviderStateMixin {
               ),
               Center(
                 child: AnimatedPadding(
-                  duration: Duration(milliseconds: 1200),
+                  duration: const Duration(milliseconds: 1200),
                   curve: Curves.fastLinearToSlowEaseIn,
                   padding: !_flip
                       ? EdgeInsets.only(top: size.width * .8)
                       : EdgeInsets.zero,
                   child: AnimatedOpacity(
                     opacity: !_flip ? 0 : 1.0,
-                    duration: Duration(milliseconds: 1200),
+                    duration: const Duration(milliseconds: 1200),
                     curve: Curves.fastLinearToSlowEaseIn,
                     child: Text(
-                      "Fantasy100",
+                      Globals.appName,
                       style: GoogleFonts.acme(
                           fontWeight: FontWeight.w300,
                           fontSize: 40,

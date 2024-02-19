@@ -18,12 +18,12 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   Widget build(BuildContext context) {
     var size = getSize(context);
     return Scaffold(
-      backgroundColor: Globals.backgroundColor,
+      backgroundColor: Globals.black,
       appBar: AppBar(
         title: Text("Transaction History"),
+        backgroundColor: Globals.black,
         elevation: 10,
         shadowColor: Colors.black.withOpacity(.1),
-        backgroundColor: Globals.backgroundColor,
         foregroundColor: Globals.primaryColor,
       ),
       body: SizedBox(
@@ -34,13 +34,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
               BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           itemCount: 50,
           itemBuilder: (context, index) {
-            return TransactionTile(
-              fees: "N\$ 50",
-              icon: FontAwesomeIcons.moneyBillTransfer,
-              onPressed: () {},
-              subtitle: "The Clerks Quarters Guage Bar",
-              title: "Payment for Parking Spot",
-            );
+            return Text("");
           },
         ),
       ),

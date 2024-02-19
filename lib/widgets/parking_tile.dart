@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hospital/models/player.dart';
 import 'package:hospital/pages/transactions/parking_overlay.dart';
 import 'package:hospital/utils/transitions.dart';
 import 'package:jiffy/jiffy.dart';
@@ -10,13 +11,8 @@ import 'package:jiffy/jiffy.dart';
 import '../utils/globals.dart';
 
 class PlayerTile extends StatefulWidget {
-  PlayerTile(
-      {super.key,
-      required this.index,
-      required this.callback,
-      required this.score});
-  final VoidCallback callback;
-  final String score;
+  PlayerTile({super.key, required this.index, required this.player});
+  final Player player;
   int index;
 
   @override
@@ -24,10 +20,10 @@ class PlayerTile extends StatefulWidget {
 }
 
 class _PlayerTileState extends State<PlayerTile> {
-  late bool test;
+  late final Player player;
   @override
   void initState() {
-    test = widget.index % 3 == 0;
+    player = widget.player;
     super.initState();
   }
 
@@ -37,25 +33,24 @@ class _PlayerTileState extends State<PlayerTile> {
     return Hero(
       tag: "${widget.index}",
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5),
+        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 1),
         child: MaterialButton(
-          padding: EdgeInsets.only(left: 1.5, bottom: 10, top: 10),
+          padding: const EdgeInsets.only(left: 1.5, bottom: 10, top: 10),
           enableFeedback: true,
           onPressed: () {
-            widget.callback();
             // if (false)
             Navigator.push(context,
                 LeftTransition(child: ParkingOverlay(index: widget.index)));
           },
           shape: Globals.radius(20),
-          color: Globals.white,
+          color: Globals.lightBlack.withOpacity(.5),
           elevation: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               MaterialButton(
                 shape: const CircleBorder(),
-                color: Colors.white,
+                color: Globals.black,
                 onPressed: () {
                   HapticFeedback.heavyImpact();
                 },
@@ -68,8 +63,7 @@ class _PlayerTileState extends State<PlayerTile> {
                     child: Center(
                       child: ClipOval(
                         child: CachedNetworkImage(
-                          imageUrl:
-                              "https://unsplash.com/photos/mEZ3PoFGs_k/download?ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzAyODQ3ODM1fA&force=true&w=640",
+                          imageUrl: player.image,
                           width: 50,
                           height: 50,
                           alignment: Alignment.center,
@@ -91,26 +85,36 @@ class _PlayerTileState extends State<PlayerTile> {
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
-                        "Mr Melo FC",
+                        "Mr Melo FC with higher levels of adrenaline",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Globals.title,
+                        style: Globals.greyTitle,
                       ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 4),
-                          child: Text(
-                            widget.index.toString(),
-                            style: TextStyle(
-                                color: const Color(0xff00aa00),
-                                fontWeight: FontWeight.w600),
+                          padding: const EdgeInsets.only(left: .0, right: 4),
+                          child: Material(
+                            shape: CircleBorder(),
+                            color: Colors.black,
+                            child: SizedBox(
+                              width: 25,
+                              height: 25,
+                              child: Center(
+                                child: Text(
+                                  widget.index.toString(),
+                                  style: const TextStyle(
+                                      color: Globals.primaryColor,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 0.0, right: 4),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 0.0, right: 4),
                           child: Text(
                             "Ndoye Philip Ndula",
                             style: TextStyle(
@@ -123,33 +127,33 @@ class _PlayerTileState extends State<PlayerTile> {
                   ],
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Card(
                 shape: Globals.radius(20),
                 elevation: 20,
                 shadowColor: Colors.black.withOpacity(.09),
-                color: Globals.white,
+                color: Globals.lightBlack,
                 child: SizedBox(
-                  width: 45,
+                  width: 65,
                   height: 55,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        widget.score,
-                        style: TextStyle(
+                        player.rank,
+                        style: const TextStyle(
                             fontWeight: FontWeight.w700,
-                            fontSize: 16,
+                            fontSize: 19,
                             color: Globals.primaryColor,
                             fontFamily: "Lato"),
                       ),
                       Text(
-                        "49 mins",
+                        "POINTS",
                         style: TextStyle(
                             fontWeight: FontWeight.w300,
                             fontSize: 10,
-                            color: Color(0xff000000),
+                            color: Globals.white.withOpacity(.66),
                             fontFamily: "Lato"),
                       ),
                     ],

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_count_down/date_count_down.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -704,21 +706,17 @@ class _SignupPageState extends State<SignupPage> {
                 "points": [],
                 "photo":
                     'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg?w=740',
-                "totalBids": 0,
                 "blocked": false,
                 "balance": 0,
-                "reviews": 0,
                 "location": _location,
                 "referralCode": rc,
-                "sold": 0,
-                "whatsappNumber": "+237${_numberController.text.trim()}",
+                "mandatoryBets": 0,
                 "website": "",
                 "referralSettled": false,
                 "referrer": referrer,
                 "bidChats": [],
-                "feedbackScore": 0,
                 "verified": false,
-                "name": "user$phone"
+                "name": "user${Random().nextInt(999999999)}"
               };
 
               await firestore
@@ -912,27 +910,22 @@ class _SignupPageState extends State<SignupPage> {
               break;
             }
           }
-
           final Map<String, dynamic> info = {
             "phone": "+237${_numberController.text.trim()}",
             "points": [],
             "photo":
                 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg?w=740',
-            "totalBids": 0,
             "blocked": false,
             "balance": 0,
-            "reviews": 0,
             "location": _location,
             "referralCode": rc,
-            "sold": 0,
-            "whatsappNumber": "+237${_numberController.text.trim()}",
+            "mandatoryBets": 0,
             "website": "",
             "referralSettled": false,
             "referrer": referrer,
             "bidChats": [],
-            "feedbackScore": 0,
             "verified": false,
-            "name": "user$phone"
+            "name": "user${Random().nextInt(999999999)}"
           };
 
           await firestore
@@ -942,8 +935,6 @@ class _SignupPageState extends State<SignupPage> {
               .then((value) async {
             toast(message: "Almost there");
             String topic = "${auth.currentUser!.uid}_msg";
-
-            debugPrint("Almost thererrrrr");
 
             await messaging
                 .subscribeToTopic(topic)

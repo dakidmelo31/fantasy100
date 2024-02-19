@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hospital/models/winning_position.dart';
 import 'package:jiffy/jiffy.dart';
 
 import '../utils/globals.dart';
 
 class TransactionTile extends StatefulWidget {
   const TransactionTile(
-      {super.key,
-      required this.onPressed,
-      required this.title,
-      required this.fees,
-      required this.subtitle,
-      required this.icon});
-  final VoidCallback onPressed;
-  final String title;
-  final String fees;
-  final String subtitle;
-  final IconData icon;
+      {super.key, required this.person, required this.cashPrize});
+  final WinningPosition person;
+  final int cashPrize;
 
   @override
   State<TransactionTile> createState() => _TransactionTileState();
@@ -24,8 +18,16 @@ class TransactionTile extends StatefulWidget {
 
 class _TransactionTileState extends State<TransactionTile> {
   bool open = false;
+  late final WinningPosition person;
+  @override
+  void initState() {
+    person = widget.person;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final size = getSize(context);
     return AnimatedScale(
       duration: const Duration(milliseconds: 300),
       scale: open ? .95 : 1.0,
@@ -47,7 +49,6 @@ class _TransactionTileState extends State<TransactionTile> {
             customBorder:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
             onTap: () {
-              widget.onPressed();
               setState(() {
                 open = !open;
               });
@@ -68,74 +69,72 @@ class _TransactionTileState extends State<TransactionTile> {
                                   bottomRight: Radius.circular(0),
                                   topRight: Radius.circular(0))),
                           elevation: 0,
-                          color: Globals.primaryColor,
+                          color: Globals.black,
                           child: SizedBox(
                             height: 60,
-                            width: 80,
+                            width: 45,
                             child: Center(
-                              child: Text(
-                                "N\$ 150.0",
-                                style: Globals.whiteHeading,
+                              child: Icon(
+                                FontAwesomeIcons.trophy,
+                                color: Globals.primaryColor,
                               ),
                             ),
                           ),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 8.0, top: 6.0, bottom: 2.0),
-                              child: Text(
-                                widget.title,
-                                style: Globals.title,
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.only(
-                                  left: 8.0, top: 6.0, bottom: 2.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
+                        SizedBox(
+                          width: size.width * .59,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 18.0, top: 6.0, bottom: 2.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, top: 6.0, bottom: 2.0),
+                                  child: Text(
+                                    person.title,
+                                    style: Globals.title,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, top: 6.0, bottom: 2.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        "Fee: ",
-                                        style: Globals.subtitle,
-                                      ),
-                                      Text(
-                                        "N\$ 1.56",
-                                        style: TextStyle(
-                                            color: Color(0xff505050),
-                                            fontFamily: "Lato",
-                                            fontWeight: FontWeight.w300),
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "Prize: ",
+                                            style: Globals.subtitle,
+                                          ),
+                                          Text(
+                                            "${prettyNumber(((person.prize / 100) * widget.cashPrize))} CFA",
+                                            style: const TextStyle(
+                                                color: Color(0xff505050),
+                                                fontFamily: "Lato",
+                                                fontWeight: FontWeight.w300),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(left: 46),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              if (false)
-                                Icon(
-                                  FontAwesomeIcons.moneyBillTransfer,
-                                  size: 15,
-                                  color: Colors.pink,
-                                ),
-                              Text(
-                                "Done",
-                                style: TextStyle(
-                                  color: Color(0xff00aa00),
-                                  fontWeight: FontWeight.w600,
-                                ),
+                              Icon(
+                                FontAwesomeIcons.medal,
+                                color: Globals.black,
                               )
                             ],
                           ),
@@ -157,6 +156,7 @@ class _TransactionTileState extends State<TransactionTile> {
                     height: open ? 60 : 0,
                     width: double.infinity,
                     child: ListView(
+                      physics: NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       children: [
                         Row(
@@ -180,7 +180,7 @@ class _TransactionTileState extends State<TransactionTile> {
                                     child: Padding(
                                       padding: EdgeInsets.only(left: 18.0),
                                       child: Text(
-                                        "N\$ 2.0",
+                                        "Settled: ",
                                         style: Globals.title,
                                       ),
                                     ),
@@ -193,27 +193,24 @@ class _TransactionTileState extends State<TransactionTile> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Padding(
-                                          padding: EdgeInsets.only(
+                                        Padding(
+                                          padding: const EdgeInsets.only(
                                               left: 8.0, top: 6.0, bottom: 2.0),
                                           child: Text(
-                                            "Fees",
+                                            person.winnerID != null
+                                                ? "Yes"
+                                                : "Not yet",
                                             style: Globals.title,
                                           ),
                                         ),
-                                        Align(
+                                        const Align(
                                           alignment: Alignment.centerRight,
                                           child: Padding(
-                                            padding: const EdgeInsets.only(
+                                            padding: EdgeInsets.only(
                                                 top: 6, left: 26.0),
                                             child: Text(
-                                              Jiffy.parseFromDateTime(
-                                                      DateTime.now().subtract(
-                                                          const Duration(
-                                                              days: 65)))
-                                                  .yMMMEdjm
-                                                  .toString(),
-                                              style: const TextStyle(
+                                              "Mandatory games",
+                                              style: TextStyle(
                                                   color: Color(0xffaaaaaa),
                                                   fontWeight: FontWeight.w400),
                                             ),
@@ -232,11 +229,12 @@ class _TransactionTileState extends State<TransactionTile> {
                               elevation: 6,
                               shadowColor:
                                   Globals.primaryColor.withOpacity(.09),
-                              child: const Padding(
-                                padding: EdgeInsets.all(14.0),
-                                child: Icon(
-                                  Icons.touch_app,
-                                  color: Color(0xffcccccc),
+                              child: Padding(
+                                padding: const EdgeInsets.all(14.0),
+                                child: Text(
+                                  prettyNumber(person.mandatoryGames),
+                                  style:
+                                      GoogleFonts.poppins(color: Globals.black),
                                 ),
                               ),
                             )

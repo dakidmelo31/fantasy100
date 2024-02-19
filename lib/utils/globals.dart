@@ -11,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,8 +48,12 @@ Future<void> toast(
 FirebaseMessaging messaging = FirebaseMessaging.instance;
 const IP = "192.168.220.230";
 
+const space = SizedBox(height: kToolbarHeight);
+
 class Globals {
   static const appName = "Fantasy100";
+
+  static const brown = Color(0xff1A1423);
 
   static Future<void> sendGeneralNotification(
       {required String title,
@@ -97,6 +103,7 @@ class Globals {
     return result;
   }
 
+  // static const primaryColor = Color(0xffFF0022);
   static const primaryColor = Color(0xffDD1C1A);
   static const backgroundColor = Color(0xfffcfcfc);
 
@@ -106,6 +113,8 @@ class Globals {
 
   static const whiteText =
       TextStyle(color: Colors.white, fontFamily: "Lato", fontSize: 16);
+  static const lightText =
+      TextStyle(color: Color(0xffFBC3BC), fontFamily: "Lato", fontSize: 16);
   static const feeText = TextStyle(
       color: Color(0xff333333),
       fontFamily: "Lato",
@@ -119,6 +128,7 @@ class Globals {
   static const title = TextStyle(
       color: Colors.black,
       fontFamily: "Lato",
+      overflow: TextOverflow.ellipsis,
       fontSize: 16,
       fontWeight: FontWeight.w800);
   static const primaryText = TextStyle(
@@ -131,14 +141,18 @@ class Globals {
       fontFamily: "Lato",
       fontSize: 16,
       fontWeight: FontWeight.w800);
+  static const greyTitle = TextStyle(
+      color: Color(0xffeeddcc), fontSize: 16, fontWeight: FontWeight.w900);
   static const whiteTextBigger =
       TextStyle(color: Colors.white, fontFamily: "Lato", fontSize: 26);
 
   static const mainDuration = Duration(milliseconds: 700);
   static const revDuration = Duration(milliseconds: 300);
 
-  static const black = Color(0xff030027);
-  static const lightBlack = Color(0xff03012C);
+  static const black = Color(0xff1A1423);
+  static const blacker = Color(0xFF2B2139);
+  static const darkBlue = Color(0xff030027);
+  static const lightBlack = Color(0xff1A1423);
   static const transparent = Color(0x00000000);
 
   static const timeText =
@@ -571,14 +585,38 @@ class Globals {
   }
 
   static void signup(String phone) {}
+
+  static Future<void> googleSignup() async {
+    GoogleSignInAccount? account = await googleSignIn.signIn();
+
+    if (account != null) {
+      final idToken = account.id;
+      debugPrint(idToken);
+
+// Use the ID token to sign in with Firebase
+      final AuthCredential credential =
+          GoogleAuthProvider.credential(idToken: idToken);
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      toast("Successfully logged in");
+
+      // Access user information (if authenticated)
+    } else {
+      toast("Failed to signin, try again");
+    }
+  }
 }
 
+String googleToken = '';
+
+final googleSignIn = GoogleSignIn(
+  scopes: ['email'],
+);
 Size getSize(BuildContext context) {
   return MediaQuery.of(context).size;
 }
 
 Widget placeholder = Lottie.asset(
-  "$dir/load2.json",
+  "$dir/load1.json",
   fit: BoxFit.contain,
   filterQuality: FilterQuality.high,
 );
@@ -617,3 +655,230 @@ Future<String> _base64encodedImage(String url) async {
   // final String base64Data = base64Encode(response.bodyBytes);
   return 'base64Data';
 }
+
+String prettyNumber(dynamic num) {
+  return NumberFormat().format(num);
+}
+
+List<Map<String, dynamic>> dummyGroups = [
+  {
+    "title": "Mega Contest",
+    "playersID": [],
+    "entryFee": 200,
+    "limit": 1000000,
+    "closed": false,
+    "cashPrize": 250000,
+    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "winningPositions": [
+      {
+        "title": "First Position",
+        "prize": 60,
+        "mandatoryGames": 10,
+        "bonus": 1000,
+        "winnerID": null
+      },
+      {
+        "title": "Second Position",
+        "prize": 12,
+        "mandatoryGames": 10,
+        "bonus": 1000,
+        "winnerID": null
+      },
+      {
+        "title": "Third Position",
+        "prize": 7,
+        "mandatoryGames": 10,
+        "bonus": 2000,
+        "winnerID": null
+      },
+      {
+        "title": "Fourth Position",
+        "prize": 5,
+        "mandatoryGames": 10,
+        "bonus": 2500,
+        "winnerID": null
+      },
+    ]
+  },
+  {
+    "title": "Lucky Stars Align",
+    "playersID": [],
+    "entryFee": 100,
+    "limit": 250000,
+    "closed": false,
+    "cashPrize": 50000,
+    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "winningPositions": [
+      {
+        "title": "First Position",
+        "prize": 10,
+        "mandatoryGames": 5,
+        "bonus": 1000,
+        "winnerID": null
+      },
+      {
+        "title": "Second Position",
+        "prize": 8,
+        "mandatoryGames": 5,
+        "bonus": 500,
+        "winnerID": null
+      },
+      {
+        "title": "Third Position",
+        "prize": 5,
+        "mandatoryGames": 5,
+        "bonus": 250,
+        "winnerID": null
+      },
+      {
+        "title": "Fourth Position",
+        "prize": 3,
+        "mandatoryGames": 5,
+        "bonus": 100,
+        "winnerID": null
+      },
+      {
+        "title": "Fifth Position",
+        "prize": 2,
+        "mandatoryGames": 5,
+        "winnerID": null
+      }
+    ]
+  },
+  {
+    "title": "Epic Encounters",
+    "playersID": [],
+    "entryFee": 250,
+    "limit": 750000,
+    "closed": false,
+    "cashPrize": 150000,
+    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "winningPositions": [
+      {
+        "title": "First Position",
+        "prize": 30,
+        "mandatoryGames": 12,
+        "bonus": 5000,
+        "winnerID": null
+      },
+      {
+        "title": "Second Position",
+        "prize": 15,
+        "mandatoryGames": 12,
+        "bonus": 2500,
+        "winnerID": null
+      },
+      {
+        "title": "Third Position",
+        "prize": 10,
+        "mandatoryGames": 12,
+        "bonus": 1000,
+        "winnerID": null
+      },
+      {
+        "title": "Fourth Position",
+        "prize": 7,
+        "mandatoryGames": 12,
+        "bonus": 500,
+        "winnerID": null
+      },
+      {
+        "title": "Fifth Position",
+        "prize": 5,
+        "mandatoryGames": 12,
+        "winnerID": null
+      }
+    ]
+  },
+  {
+    "title": "Fortunate Frenzy",
+    "playersID": [],
+    "entryFee": 200,
+    "limit": 1000000,
+    "closed": false,
+    "cashPrize": 250000,
+    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "winningPositions": [
+      {
+        "title": "First Position",
+        "prize": 25,
+        "mandatoryGames": 10,
+        "bonus": 5000,
+        "winnerID": null
+      },
+      {
+        "title": "Second Position",
+        "prize": 12,
+        "mandatoryGames": 10,
+        "bonus": 2500,
+        "winnerID": null
+      },
+      {
+        "title": "Third Position",
+        "prize": 8,
+        "mandatoryGames": 10,
+        "bonus": 1000,
+        "winnerID": null
+      },
+      {
+        "title": "Fourth Position",
+        "prize": 5,
+        "mandatoryGames": 10,
+        "bonus": 500,
+        "winnerID": null
+      },
+      {
+        "title": "Fifth Position",
+        "prize": 3,
+        "mandatoryGames": 10,
+        "bonus": 250,
+        "winnerID": null
+      }
+    ]
+  },
+  {
+    "title": "Masterful Mania",
+    "playersID": [],
+    "entryFee": 150,
+    "limit": 500000,
+    "closed": false,
+    "cashPrize": 100000,
+    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "winningPositions": [
+      {
+        "title": "First Position",
+        "prize": 20,
+        "mandatoryGames": 15,
+        "bonus": 3000,
+        "winnerID": null
+      },
+      {
+        "title": "Second Position",
+        "prize": 10,
+        "mandatoryGames": 15,
+        "bonus": 2000,
+        "winnerID": null
+      },
+      {
+        "title": "Third Position",
+        "prize": 7,
+        "mandatoryGames": 15,
+        "bonus": 1000,
+        "winnerID": null
+      },
+      {
+        "title": "Fourth Position",
+        "prize": 5,
+        "mandatoryGames": 15,
+        "bonus": 500,
+        "winnerID": null
+      },
+      {
+        "title": "Fifth Position",
+        "prize": 3,
+        "mandatoryGames": 15,
+        "winnerID": null
+      }
+    ]
+  },
+];
