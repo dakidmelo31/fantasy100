@@ -8,15 +8,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hospital/models/player.dart';
 import 'package:hospital/pages/chat/gemini_chat.dart';
+import 'package:hospital/pages/confirm_team.dart';
 import 'package:hospital/pages/startup/SignupPage.dart';
 import 'package:hospital/pages/startup/wave_screen.dart';
 import 'package:hospital/pages/transactions/payment_history.dart';
 import 'package:hospital/pages/transactions/topup_page.dart';
+import 'package:hospital/providers/data_provider.dart';
 import 'package:hospital/utils/globals.dart';
 import 'package:hospital/utils/transitions.dart';
 import 'package:hospital/widgets/drag_notch.dart';
@@ -25,7 +28,11 @@ import 'package:hospital/widgets/honeypot.dart';
 import 'package:hospital/widgets/parking_tile.dart';
 import 'package:hospital/widgets/transaction_tile.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../widgets/scale_animation.dart';
 import 'account/my_account.dart';
@@ -48,30 +55,11 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   final _drawerKey = GlobalKey<ScaffoldState>();
 
   bool _opened = false;
-  List<Player> players = [];
 
   late final DateTime _mainDuration;
   @override
   void initState() {
-    final faker = Faker();
     _mainDuration = DateTime.now().add(const Duration(days: 16));
-    players = List<Player>.generate(
-        220,
-        (index) => Player(
-            userID: const Uuid().v4(),
-            username: faker.person.firstName(),
-            teamName: faker.company.name(),
-            rank: "${Random().nextInt(200)}",
-            createdAt: DateTime.now(),
-            joinDate: DateTime.now(),
-            playHistory: [],
-            timesWon: Random().nextInt(30),
-            amountPlayed: Random().nextInt(100),
-            amountWon: Random().nextInt(50000),
-            image: faker.image.image()))
-      ..sort(
-        (b, a) => int.parse(a.rank).compareTo(int.parse(b.rank)),
-      );
     // scoreTiles.sort((a, b) => a.,)
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 800));
@@ -95,6 +83,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     _repeatController.dispose();
     _animationController.dispose();
     _animation.isDismissed;
+    _controller.dispose();
     _repeatAnimation.isDismissed;
     super.dispose();
   }
@@ -104,13 +93,16 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final size = getSize(context);
+    final data = Provider.of<DataProvider>(context, listen: true);
+    final players = data.managers;
     return PopScope(
-      canPop: !_showSignup,
+      canPop: !_opened && !_showSignup,
       onPopInvoked: (pop) async {
         debugPrint("$_showSignup || $opened");
-        if (_showSignup) {
+        if (_showSignup || _opened) {
           setState(() {
             opened = false;
+            _opened = false;
             _showSignup = false;
           });
           // return false;
@@ -120,11 +112,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       child: StreamBuilder<User?>(
         stream: auth.authStateChanges(),
         builder: (context, AsyncSnapshot<User?> snapshot) {
-          User? data;
           bool _alreadySignedUp = false;
           if (snapshot.hasData) {
             _alreadySignedUp = true;
-            data = snapshot.data!;
             // debugPrint("Data: $data");
           }
 
@@ -139,9 +129,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                       SliverAppBar(
                         floating: true,
                         stretch: false,
-                        snap: true,
+                        snap: false,
                         expandedHeight: 100,
-                        flexibleSpace: FlexibleSpaceBar(
+                        flexibleSpace: const FlexibleSpaceBar(
                           title: Text("Mr Melo FC"),
                           stretchModes: [
                             StretchMode.blurBackground,
@@ -167,7 +157,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                         builder: (_) => GeminiScreen(chat)));
                               },
                               color: Globals.primaryColor,
-                              icon: Icon(FontAwesomeIcons.robot)),
+                              icon: const Icon(FontAwesomeIcons.robot)),
                           IconButton(
                               onPressed: () {
                                 debugPrint("Show Notification");
@@ -210,10 +200,23 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                           height: 40,
                                           fit: BoxFit.contain),
                                     const SizedBox(width: 8),
-                                    const Icon(
-                                      FontAwesomeIcons.plus,
+                                    Icon(
+                                      auth.currentUser != null
+                                          ? FontAwesomeIcons.plus
+                                          : Icons.person_add_alt_1_rounded,
+                                      size: 30,
                                       color: Colors.white,
-                                    )
+                                    ),
+                                    if (auth.currentUser != null)
+                                      FloatingActionButton(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Globals.black,
+                                        shape: const CircleBorder(),
+                                        onPressed: _launchUrl,
+                                        child: const Icon(
+                                            FontAwesomeIcons.signIn,
+                                            size: 15),
+                                      )
                                   ],
                                 ),
                               ),
@@ -311,7 +314,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                                   children: [
                                                     Padding(
                                                         padding:
-                                                            EdgeInsets.all(6),
+                                                            const EdgeInsets
+                                                                .all(6),
                                                         child: SizedBox(
                                                             height: size.width,
                                                             width: size.width,
@@ -564,7 +568,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         ),
                       ),
                       SliverList(
-                          delegate: SliverChildListDelegate([GroupGamelist()]))
+                          delegate:
+                              SliverChildListDelegate([const GroupGamelist()]))
                     ],
                   )),
               AnimatedPositioned(
@@ -599,44 +604,112 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       left: 28.0, top: 26, right: 18),
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _opened = !_opened;
-                                        });
-                                      },
-                                      child: DragNotch(pullDown: () {
-                                        setState(() {
-                                          _opened = false;
-                                        });
-                                      }, pullUp: () {
-                                        setState(() {
-                                          _opened = true;
-                                        });
-                                      })),
+                                  child: DragNotch(flipCallback: () {
+                                    setState(() {
+                                      _opened = !_opened;
+                                    });
+                                  }, pullDown: () {
+                                    setState(() {
+                                      _opened = false;
+                                    });
+                                  }, pullUp: () {
+                                    setState(() {
+                                      _opened = true;
+                                    });
+                                  }),
                                 ),
                               ),
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount: players.length,
-                                  physics: const BouncingScrollPhysics(
-                                      parent: AlwaysScrollableScrollPhysics()),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 1, vertical: 10),
-                                  itemBuilder: (context, index) {
-                                    final player = players[index];
-                                    return PlayerTile(
-                                        index: index, player: player);
+                              players.isEmpty
+                                  ? AnimatedContainer(
+                                      duration: Globals.mainDuration,
+                                      curve: Curves.fastEaseInToSlowEaseOut,
+                                      height: _opened ? 170 : 0,
+                                      child: ListView(
+                                        shrinkWrap: true,
+                                        padding:
+                                            const EdgeInsets.only(top: 108.0),
+                                        children: [
+                                          SizedBox(
+                                            child: MaterialButton(
+                                                height: 50,
+                                                shape: Globals.radius(18),
+                                                color: Globals.black,
+                                                elevation: 0,
+                                                textColor: Colors.white,
+                                                onPressed: () {
+                                                  toast(
+                                                      message:
+                                                          "procedure for joining");
+                                                },
+                                                child: const Text(
+                                                    "No players in leage yet")),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Expanded(
+                                      child: NotificationListener<
+                                          ScrollNotification>(
+                                        onNotification: (scrollNotification) {
+                                          if (scrollNotification
+                                                  is ScrollEndNotification &&
+                                              scrollNotification
+                                                      .metrics.extentAfter ==
+                                                  0) {
+                                            HapticFeedback.heavyImpact();
+                                            data.loadFantasyGroup(more: true);
+                                          }
+                                          return false;
+                                        },
+                                        child: AnimatedSwitcher(
+                                          duration: Globals.mainDurationLonger,
+                                          child: Column(
+                                            children: [
+                                              Expanded(
+                                                child: ListView.builder(
+                                                  itemCount: players.length,
+                                                  physics:
+                                                      const BouncingScrollPhysics(
+                                                          parent:
+                                                              AlwaysScrollableScrollPhysics()),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 1,
+                                                      vertical: 10),
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final player =
+                                                        players[index];
+                                                    return PlayerTile(
+                                                        index: index,
+                                                        manager: player);
 
-                                    // return TransactionTile(
-                                    //     onPressed: () {},
-                                    //     title: "Mr Melo FC",
-                                    //     fees: Random().nextInt(120).toString(),
-                                    //     subtitle: "${index + 1}",
-                                    //     icon: FontAwesomeIcons.shieldHeart);
-                                  },
-                                ),
-                              )
+                                                    // return TransactionTile(
+                                                    //     onPressed: () {},
+                                                    //     title: "Mr Melo FC",
+                                                    //     fees: Random().nextInt(120).toString(),
+                                                    //     subtitle: "${index + 1}",
+                                                    //     icon: FontAwesomeIcons.shieldHeart);
+                                                  },
+                                                ),
+                                              ),
+                                              AnimatedContainer(
+                                                  duration:
+                                                      Globals.mainDuration,
+                                                  color: Globals.black,
+                                                  curve: Curves
+                                                      .fastEaseInToSlowEaseOut,
+                                                  width: size.width,
+                                                  height: data.loadingManagers
+                                                      ? 90
+                                                      : 0,
+                                                  child: Lottie.asset(
+                                                      "$dir/loading5.json"))
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    )
                             ],
                           ),
                         ),
@@ -855,34 +928,36 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                             child: const Icon(
                                                 FontAwesomeIcons.phone),
                                           ),
+                                          const SizedBox(height: 20),
                                           const Text(
-                                            "Phone",
+                                            "Signup with Phone",
                                             style: TextStyle(
                                                 color: Color(0xff999999)),
                                           )
                                         ],
                                       ),
-                                      Column(
-                                        children: [
-                                          FloatingActionButton(
-                                            heroTag: "Google",
-                                            backgroundColor: Globals.black,
-                                            foregroundColor:
-                                                Globals.primaryColor,
-                                            onPressed: () async {
-                                              await Globals.googleSignup();
-                                            },
-                                            shape: const CircleBorder(),
-                                            child: const Icon(
-                                                FontAwesomeIcons.google),
-                                          ),
-                                          const Text(
-                                            "Google",
-                                            style: TextStyle(
-                                                color: Color(0xff999999)),
-                                          )
-                                        ],
-                                      ),
+                                      if (false)
+                                        Column(
+                                          children: [
+                                            FloatingActionButton(
+                                              heroTag: "Google",
+                                              backgroundColor: Globals.black,
+                                              foregroundColor:
+                                                  Globals.primaryColor,
+                                              onPressed: () async {
+                                                await Globals.googleSignup();
+                                              },
+                                              shape: const CircleBorder(),
+                                              child: const Icon(
+                                                  FontAwesomeIcons.google),
+                                            ),
+                                            const Text(
+                                              "Google",
+                                              style: TextStyle(
+                                                  color: Color(0xff999999)),
+                                            )
+                                          ],
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -894,11 +969,247 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-              )
+              ),
+              AnimatedPositioned(
+                  curve: Curves.fastEaseInToSlowEaseOut,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  top: data.showLoader ? 0 : size.height,
+                  duration: Globals.mainDuration,
+                  child: Material(
+                    elevation: 0,
+                    color: Colors.transparent,
+                    child: ListView(
+                      children: [
+                        Container(
+                          width: size.width,
+                          height: size.height,
+                          color: Colors.black.withOpacity(.7),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Lottie.asset("$dir/loading5.json",
+                                  width: 80, height: 80),
+                              const Text(
+                                "Checking details, please wait",
+                                style: Globals.whiteText,
+                              )
+                            ],
+                          ),
+                        ).animate(target: data.showLoader ? 1 : 0, effects: [
+                          const FadeEffect(
+                              begin: 0,
+                              end: 1,
+                              curve: Curves.fastLinearToSlowEaseIn,
+                              duration: Globals.mainDurationLonger),
+                          const ScaleEffect(
+                              duration: Duration(milliseconds: 300),
+                              alignment: Alignment.bottomCenter)
+                        ]),
+                      ],
+                    ),
+                  )),
+              AnimatedPositioned(
+                  duration: Globals.mainDurationLonger,
+                  curve: Curves.fastLinearToSlowEaseIn,
+                  left: 0,
+                  top: 0,
+                  width: size.width,
+                  height: size.height,
+                  child: Material(
+                    elevation: 0,
+                    color: Globals.white,
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: 9,
+                        sigmaY: 9,
+                      ),
+                      child: SizedBox(
+                        width: size.width,
+                        height: size.height,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            YoutubePlayer(
+                              onReady: () {
+                                // _controller.addListener();
+                                // _controller.toggleFullScreenMode();
+                                _controller.play();
+                              },
+                              controller: _controller,
+                              showVideoProgressIndicator: true,
+                            ),
+                            const Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(top: 30),
+                                  child: Text(
+                                    "Connect your team",
+                                    textAlign: TextAlign.center,
+                                    style: Globals.heading,
+                                  ),
+                                ),
+                                space,
+                                ListTile(
+                                  title: Text(
+                                    "Login to your FPL account",
+                                    style: Globals.title,
+                                  ),
+                                  subtitle: Text(
+                                    "You can create a new one or reset your password",
+                                    style: Globals.greySubtitle,
+                                  ),
+                                ),
+                                ListTile(
+                                  title: Text(
+                                    "What to note",
+                                    style: Globals.title,
+                                  ),
+                                  subtitle: Text(
+                                    "You can only associate your Team to one account",
+                                    style: Globals.greySubtitle,
+                                  ),
+                                ),
+                                ListTile(
+                                  title: Text(
+                                    "Limitations",
+                                    style: Globals.title,
+                                  ),
+                                  subtitle: Text(
+                                    "You can only get your ID by using logging into a web browser and not the FPL App",
+                                    style: Globals.greySubtitle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 58.0),
+                              child: MaterialButton(
+                                onPressed: _launchUrl,
+                                height: 55,
+                                color: Globals.primaryColor,
+                                minWidth: size.width * .8,
+                                textColor: Globals.white,
+                                elevation: 20,
+                                child: const Text("Get your Team ID"),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ))
             ],
           );
         },
       ),
     );
+  }
+
+  final YoutubePlayerController _controller = YoutubePlayerController(
+    initialVideoId: '5vXiVHdyxuY',
+    flags: const YoutubePlayerFlags(
+      forceHD: true,
+      loop: false,
+      autoPlay: true,
+      mute: false,
+    ),
+  );
+
+  final Uri _url = Uri.parse('https://users.premierleague.com/');
+
+  final TextEditingController _userIDController = TextEditingController();
+
+  Future<void> _launchUrl() async {
+    await launchUrl(_url).then((value) {
+      if (value) {
+        showCupertinoDialog(
+            context: context,
+            builder: (_) {
+              return CupertinoAlertDialog(
+                title: const Text("Enter your account ID"),
+                content: Column(
+                  children: [
+                    const Text(
+                        "Your account id helps us associate your account with us with your actual TEAM."),
+                    space,
+                    Card(
+                      elevation: 0,
+                      color: Colors.transparent,
+                      surfaceTintColor: Colors.transparent,
+                      shadowColor: Globals.black.withOpacity(.2),
+                      margin: EdgeInsets.zero,
+                      child: TextField(
+                        controller: _userIDController,
+                        cursorColor: Colors.white,
+                        style: GoogleFonts.jost(
+                          color: Globals.black,
+                        ),
+                        decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 6),
+                            hintText: "Enter ID Number",
+                            label: const Text("Manager ID"),
+                            border: const OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Globals.black, width: 1),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            suffix: FloatingActionButton.small(
+                              heroTag: "dfklajdkl",
+                              shape: const CircleBorder(),
+                              backgroundColor: Globals.black,
+                              onPressed: () async {
+                                int res = int.tryParse(
+                                        _userIDController.text.trim()) ??
+                                    0;
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setInt("userID", res).then(
+                                    (value) => {
+                                          _userIDController.text = '',
+                                          Navigator.pop(context, res)
+                                        });
+                              },
+                              child: const Icon(FontAwesomeIcons.arrowRight,
+                                  color: Colors.white),
+                            )),
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  CupertinoDialogAction(
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                      textStyle: const TextStyle(color: Color(0xff000000)),
+                      isDefaultAction: false,
+                      child: const Text("Try again")),
+                  CupertinoDialogAction(
+                    textStyle: const TextStyle(color: Color(0xff999999)),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    isDefaultAction: false,
+                    child: const Text("Cancel"),
+                  ),
+                ],
+              );
+            }).then((value) {
+          if (value.runtimeType == int) {
+            toast(message: "Done");
+            Navigator.push(context,
+                MaterialPageRoute(builder: (_) => ConfirmTeam(userID: value)));
+          } else if (value == true) {
+            Future.delayed(Duration.zero, () {
+              _launchUrl();
+            });
+          }
+        });
+      }
+    });
   }
 }

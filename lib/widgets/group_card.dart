@@ -8,6 +8,9 @@ import 'package:hospital/pages/transactions/testing.dart';
 import 'package:hospital/utils/globals.dart';
 import 'package:hospital/utils/transitions.dart';
 import 'package:hospital/widgets/skin.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/data_provider.dart';
 
 class GroupCard extends StatefulWidget {
   const GroupCard({super.key, required this.card});
@@ -29,6 +32,8 @@ class _GroupCardState extends State<GroupCard> {
   @override
   Widget build(BuildContext context) {
     final size = getSize(context);
+    final data = Provider.of<DataProvider>(context, listen: true);
+
     return Padding(
       padding: const EdgeInsets.only(top: 25.0),
       child: Card(
@@ -160,7 +165,7 @@ class _GroupCardState extends State<GroupCard> {
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   right: 25, bottom: 18.0),
-                              child: !card.iAmParticipating
+                              child: card.iAmParticipating
                                   ? Material(
                                       color: Globals.primaryColor,
                                       shape: const CircleBorder(),
@@ -179,12 +184,38 @@ class _GroupCardState extends State<GroupCard> {
                                         ),
                                       ),
                                     )
-                                  : FloatingActionButton(
-                                      backgroundColor: Globals.black,
-                                      foregroundColor: Globals.primaryColor,
-                                      shape: const CircleBorder(),
-                                      child: const Icon(FontAwesomeIcons.add),
-                                      onPressed: () {},
+                                  : Card(
+                                      color: const Color.fromARGB(
+                                          255, 203, 204, 184),
+                                      elevation: 10,
+                                      surfaceTintColor: Colors.amber,
+                                      shape: Globals.radius(26),
+                                      child: InkWell(
+                                        customBorder: Globals.radius(26),
+                                        onTap: () {
+                                          data.loadScreen();
+                                          data.play(card);
+                                        },
+                                        child: const SizedBox(
+                                          width: 66,
+                                          height: 40,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(""),
+                                              Icon(
+                                                FontAwesomeIcons.add,
+                                                size: 15,
+                                              ),
+                                              Text("Play"),
+                                              Text("")
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
                             ),
                           ))),

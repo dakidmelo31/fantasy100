@@ -19,7 +19,11 @@ class _GroupGamelistState extends State<GroupGamelist> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 140.0),
       child: Column(
-        children: groups.map((e) => GroupCard(card: e)).toList(),
+        children: groups
+            .map((e) => GroupCard(
+                  card: e,
+                ))
+            .toList(),
       ),
     );
   }

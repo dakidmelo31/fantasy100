@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hospital/models/current_user.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
@@ -701,28 +702,29 @@ class _SignupPageState extends State<SignupPage> {
                 }
               }
 
-              final Map<String, dynamic> info = {
-                "phone": "+237${_numberController.text.trim()}",
-                "points": [],
-                "photo":
-                    'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg?w=740',
-                "blocked": false,
-                "balance": 0,
-                "location": _location,
-                "referralCode": rc,
-                "mandatoryBets": 0,
-                "website": "",
-                "referralSettled": false,
-                "referrer": referrer,
-                "bidChats": [],
-                "verified": false,
-                "name": "user${Random().nextInt(999999999)}"
-              };
+              final myData = CurrentUser(
+                  phone: "+237${_numberController.text.trim()}",
+                  referralCode: rc,
+                  balance: 0,
+                  photo: Globals.photoPlaceholder,
+                  teamID: 0,
+                  verified: false,
+                  userID: '',
+                  referrer: referrer,
+                  referralSettled: false,
+                  location: '',
+                  teamName: '',
+                  score: 0,
+                  lastRank: 0,
+                  rank: 0,
+                  total: 0,
+                  username: '',
+                  rankSort: 0);
 
               await firestore
                   .collection("users")
                   .doc(value.user!.uid)
-                  .set(info, SetOptions(merge: true))
+                  .set(myData.toMap(), SetOptions(merge: true))
                   .then((value) async {
                 toast(message: "Almost there");
 
@@ -747,11 +749,10 @@ class _SignupPageState extends State<SignupPage> {
                       ]),
                     });
                     Globals.localNotification(
-                      image:
-                          'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg?w=740',
-                      title: "Welcome to BidWars237 😊👌",
+                      image: Globals.photoPlaceholder,
+                      title: "Welcome to ${Globals.appName} 😊👌",
                       body:
-                          "Thanks for registering on BidWars237 We'll help connect you with people who want to buy your valuables, and people who wanna buy yours too. It's awesome isn't it👌💰",
+                          "Join our Jackpot competition with 2,000 CFA and compete for the cash prize",
                     );
                     Globals.sendGeneralNotification(
                         ticketID: '',
@@ -759,9 +760,8 @@ class _SignupPageState extends State<SignupPage> {
                         type: "general",
                         title: "🤸🤳Great, you referred a new user",
                         message:
-                            "👏Great job referring a new user, You stand a chance to earn a cut💵 of any deal our new friend makes on the platform😊",
-                        image:
-                            "https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg?w=740");
+                            "👏Great job referring a new user, You stand a chance to earn a cut💵 of any winnings your friend makes",
+                        image: Globals.photoPlaceholder);
 
                     Globals.signup(phone);
 
@@ -910,28 +910,29 @@ class _SignupPageState extends State<SignupPage> {
               break;
             }
           }
-          final Map<String, dynamic> info = {
-            "phone": "+237${_numberController.text.trim()}",
-            "points": [],
-            "photo":
-                'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg?w=740',
-            "blocked": false,
-            "balance": 0,
-            "location": _location,
-            "referralCode": rc,
-            "mandatoryBets": 0,
-            "website": "",
-            "referralSettled": false,
-            "referrer": referrer,
-            "bidChats": [],
-            "verified": false,
-            "name": "user${Random().nextInt(999999999)}"
-          };
+          final myData = CurrentUser(
+              phone: "+237${_numberController.text.trim()}",
+              referralCode: rc,
+              balance: 0,
+              photo: Globals.photoPlaceholder,
+              teamID: 0,
+              verified: false,
+              userID: '',
+              referrer: referrer,
+              referralSettled: false,
+              location: '',
+              teamName: '',
+              score: 0,
+              lastRank: 0,
+              rank: 0,
+              total: 0,
+              username: '',
+              rankSort: 0);
 
           await firestore
               .collection("users")
               .doc(value.user!.uid)
-              .set(info, SetOptions(merge: true))
+              .set(myData.toMap(), SetOptions(merge: true))
               .then((value) async {
             toast(message: "Almost there");
             String topic = "${auth.currentUser!.uid}_msg";
@@ -951,7 +952,7 @@ class _SignupPageState extends State<SignupPage> {
                     (value) => debugPrint("${auth.currentUser!.uid}_transfer"));
 
             String referer = _referralController.text.trim().toUpperCase();
-            debugPrint("is it hreeee");
+            debugPrint("is it here");
             if (referer.isNotEmpty) {
               debugPrint("now herereioeii");
               final snap = await firestore

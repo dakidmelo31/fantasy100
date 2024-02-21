@@ -1,18 +1,15 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hospital/models/player.dart';
 import 'package:hospital/pages/transactions/parking_overlay.dart';
 import 'package:hospital/utils/transitions.dart';
-import 'package:jiffy/jiffy.dart';
 
+import '../models/manager.dart';
 import '../utils/globals.dart';
 
 class PlayerTile extends StatefulWidget {
-  PlayerTile({super.key, required this.index, required this.player});
-  final Player player;
+  PlayerTile({super.key, required this.index, required this.manager});
+  final Manager manager;
   int index;
 
   @override
@@ -20,10 +17,10 @@ class PlayerTile extends StatefulWidget {
 }
 
 class _PlayerTileState extends State<PlayerTile> {
-  late final Player player;
+  late final Manager manager;
   @override
   void initState() {
-    player = widget.player;
+    manager = widget.manager;
     super.initState();
   }
 
@@ -40,7 +37,7 @@ class _PlayerTileState extends State<PlayerTile> {
           onPressed: () {
             // if (false)
             Navigator.push(context,
-                LeftTransition(child: ParkingOverlay(index: widget.index)));
+                LeftTransition(child: ManagerOverlay(index: widget.index)));
           },
           shape: Globals.radius(20),
           color: Globals.lightBlack.withOpacity(.5),
@@ -55,26 +52,54 @@ class _PlayerTileState extends State<PlayerTile> {
                   HapticFeedback.heavyImpact();
                 },
                 elevation: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: SizedBox(
-                    width: 55,
-                    height: 55,
-                    child: Center(
-                      child: ClipOval(
-                        child: CachedNetworkImage(
-                          imageUrl: player.image,
-                          width: 50,
-                          height: 50,
-                          alignment: Alignment.center,
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) => errorWidget2,
-                          placeholder: (context, url) => placeholder,
-                          filterQuality: FilterQuality.high,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: SizedBox(
+                        width: 55,
+                        height: 55,
+                        child: Center(
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: manager.image,
+                              width: 50,
+                              height: 50,
+                              alignment: Alignment.center,
+                              fit: BoxFit.cover,
+                              errorWidget: (context, url, error) =>
+                                  errorWidget2,
+                              placeholder: (context, url) => placeholder,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    Positioned(
+                      bottom: 0,
+                      right: 7,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: .0, right: 4),
+                        child: Material(
+                          shape: Globals.radius(16),
+                          color: Colors.black,
+                          child: SizedBox(
+                            width: 35,
+                            height: 25,
+                            child: Center(
+                              child: Text(
+                                (widget.index + 1).toString(),
+                                style: const TextStyle(
+                                    color: Globals.primaryColor,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(
@@ -82,10 +107,10 @@ class _PlayerTileState extends State<PlayerTile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Text(
-                        "Mr Melo FC with higher levels of adrenaline",
+                        manager.teamName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: Globals.greyTitle,
@@ -95,31 +120,15 @@ class _PlayerTileState extends State<PlayerTile> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(left: .0, right: 4),
-                          child: Material(
-                            shape: CircleBorder(),
-                            color: Colors.black,
-                            child: SizedBox(
-                              width: 25,
-                              height: 25,
-                              child: Center(
-                                child: Text(
-                                  widget.index.toString(),
-                                  style: const TextStyle(
-                                      color: Globals.primaryColor,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const Padding(
                           padding: EdgeInsets.only(left: 0.0, right: 4),
-                          child: Text(
-                            "Ndoye Philip Ndula",
-                            style: TextStyle(
-                                color: Color(0xffaaaaaa),
-                                fontWeight: FontWeight.w400),
+                          child: SizedBox(
+                            width: size.width * .4,
+                            child: Text(
+                              manager.username,
+                              style: TextStyle(
+                                  color: Color(0xffaaaaaa),
+                                  fontWeight: FontWeight.w400),
+                            ),
                           ),
                         ),
                       ],
@@ -141,7 +150,7 @@ class _PlayerTileState extends State<PlayerTile> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        player.rank,
+                        prettyNumber(manager.total),
                         style: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 19,

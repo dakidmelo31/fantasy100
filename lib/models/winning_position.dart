@@ -44,7 +44,7 @@ class WinningPosition {
   }
 
   factory WinningPosition.fromMap(Map<String, dynamic> map) {
-    debugPrint(map.toString());
+    // debugPrint(map.toString());
     return WinningPosition(
       title: map['title'] as String,
       prize: map['prize'] ?? 0,

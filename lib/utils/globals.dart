@@ -55,6 +55,9 @@ class Globals {
 
   static const brown = Color(0xff1A1423);
 
+  static const photoPlaceholder =
+      'https://firebasestorage.googleapis.com/v0/b/fantasy100.appspot.com/o/male.jpg?alt=media&token=c05f83d4-b3d3-4930-9c94-6ef6220698d1';
+
   static Future<void> sendGeneralNotification(
       {required String title,
       required String receiverID,
@@ -104,7 +107,8 @@ class Globals {
   }
 
   // static const primaryColor = Color(0xffFF0022);
-  static const primaryColor = Color(0xffDD1C1A);
+  static const primaryColor = Color(0xff0E103D);
+  // static const primaryColor = Color(0xffDD1C1A);
   static const backgroundColor = Color(0xfffcfcfc);
 
   static const white = Colors.white;

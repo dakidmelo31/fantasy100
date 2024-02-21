@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hospital/providers/data_provider.dart';
 import 'package:hospital/utils/globals.dart';
+import 'package:provider/provider.dart';
+
+import '../models/manager.dart';
 
 class DragNotch extends StatefulWidget {
-  const DragNotch({Key? key, required this.pullDown, required this.pullUp})
+  final VoidCallback flipCallback;
+
+  const DragNotch(
+      {Key? key,
+      required this.flipCallback,
+      required this.pullDown,
+      required this.pullUp})
       : super(key: key);
   final VoidCallback pullDown, pullUp;
 
@@ -17,15 +28,18 @@ class _DragNotchState extends State<DragNotch> {
   String text = "Pull to Open";
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<DataProvider>(context, listen: false);
+    final Manager? top = data.managers.isNotEmpty ? data.managers.first : null;
     final size = getSize(context);
     return DraggableCard(
+      flipCallback: widget.flipCallback,
       pullDown: widget.pullDown,
       pullUp: widget.pullUp,
       switchText: () {
         HapticFeedback.heavyImpact();
         setState(() {
           if (switchText) {
-            text = "GW 25";
+            text = "Leaderboard";
           }
           switchText = !switchText;
         });
@@ -33,7 +47,7 @@ class _DragNotchState extends State<DragNotch> {
       switchBack: () {
         HapticFeedback.heavyImpact();
         setState(() {
-          text = "GW 25";
+          text = data.managers.isEmpty ? data.currentGameWeek : top!.teamName;
           switchText = !switchText;
         });
       },
@@ -48,9 +62,21 @@ class _DragNotchState extends State<DragNotch> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(text, style: const TextStyle(color: Colors.white)),
-            const Text("306",
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w600)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(data.managers.isEmpty ? "-" : prettyNumber(top!.total),
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600)),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Icon(FontAwesomeIcons.crown,
+                      size: 15,
+                      color:
+                          !data.isComplete ? Colors.amber : Color(0xffaaaaaa)),
+                )
+              ],
+            ),
           ],
         ),
       ),
@@ -59,9 +85,12 @@ class _DragNotchState extends State<DragNotch> {
 }
 
 class DraggableCard extends StatefulWidget {
+  final VoidCallback flipCallback;
+
   const DraggableCard({
     Key? key,
     required this.child,
+    required this.flipCallback,
     required this.pullUp,
     required this.pullDown,
     required this.switchText,
@@ -160,7 +189,7 @@ class _DraggableCardState extends State<DraggableCard>
             child: InkWell(
               splashColor: Globals.black,
               highlightColor: Globals.black,
-              onTap: () {},
+              onTap: widget.flipCallback,
               customBorder: Globals.radius(10),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),

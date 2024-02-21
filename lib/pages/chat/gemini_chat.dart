@@ -121,18 +121,14 @@ class _GeminiScreenState extends State<GeminiScreen>
         appBar: AppBar(
           foregroundColor: const Color(0xffdddddd),
           backgroundColor: Globals.black,
-          title: Row(
+          title: const Row(
             children: [
-              const Icon(
+              Icon(
                 FontAwesomeIcons.robot,
                 size: 40,
               ),
-              if (false)
-                CircleAvatar(
-                  backgroundImage: NetworkImage(widget.chat.profilePic),
-                ),
-              const SizedBox(width: 10),
-              const Text("Wise Melo"),
+              SizedBox(width: 10),
+              Text("Wise Melo"),
             ],
           ),
           actions: [
@@ -206,7 +202,7 @@ class _GeminiScreenState extends State<GeminiScreen>
               children: [
                 Text(
                   message.content,
-                  style: GoogleFonts.poppins(color: Color(0xffdddddd)),
+                  style: GoogleFonts.poppins(color: const Color(0xffdddddd)),
                 )
               ],
             ),

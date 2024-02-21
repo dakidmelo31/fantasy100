@@ -44,6 +44,7 @@ class _GroupDetailsState extends State<GroupDetails> {
             expandedHeight: kToolbarHeight,
             actions: [
               FloatingActionButton.small(
+                heroTag: "extra",
                 shape: const CircleBorder(),
                 backgroundColor: card.iAmParticipating
                     ? Globals.primaryColor
@@ -63,6 +64,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                     : FontAwesomeIcons.plus),
               ),
               FloatingActionButton.small(
+                heroTag: "notification",
                 shape: const CircleBorder(),
                 backgroundColor: Colors.white,
                 foregroundColor: Globals.black,

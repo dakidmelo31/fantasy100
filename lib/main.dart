@@ -125,6 +125,8 @@ void showFlutterNotification(RemoteMessage message) {
   }
 }
 
+int userID = 0;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -138,6 +140,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
 
   googleToken = prefs.getString("userToken") ?? '';
+  userID = prefs.getInt("userID") ?? 0;
 
   toast(message: googleToken);
 
