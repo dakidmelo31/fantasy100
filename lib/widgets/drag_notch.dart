@@ -29,7 +29,8 @@ class _DragNotchState extends State<DragNotch> {
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<DataProvider>(context, listen: false);
-    final Manager? top = data.managers.isNotEmpty ? data.managers.first : null;
+    final Manager? top =
+        Globals.verified && auth.currentUser != null ? data.me?.manager : null;
     final size = getSize(context);
     return DraggableCard(
       flipCallback: widget.flipCallback,
@@ -47,7 +48,7 @@ class _DragNotchState extends State<DragNotch> {
       switchBack: () {
         HapticFeedback.heavyImpact();
         setState(() {
-          text = data.managers.isEmpty ? data.currentGameWeek : top!.teamName;
+          text = top == null ? data.currentGameWeek : top!.teamName;
           switchText = !switchText;
         });
       },
@@ -65,7 +66,7 @@ class _DragNotchState extends State<DragNotch> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(data.managers.isEmpty ? "-" : prettyNumber(top!.total),
+                Text(top == null ? "-" : prettyNumber(top!.total),
                     style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w600)),
                 Padding(
@@ -73,7 +74,7 @@ class _DragNotchState extends State<DragNotch> {
                   child: Icon(FontAwesomeIcons.crown,
                       size: 15,
                       color:
-                          !data.isComplete ? Colors.amber : Color(0xffaaaaaa)),
+                          data.isComplete ? Colors.amber : Color(0xffaaaaaa)),
                 )
               ],
             ),

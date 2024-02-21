@@ -128,6 +128,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                     slivers: [
                       SliverAppBar(
                         floating: true,
+                        pinned: true,
                         stretch: false,
                         snap: false,
                         expandedHeight: 100,
@@ -177,6 +178,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                             child: InkWell(
                               customBorder: Globals.radius(16),
                               onTap: () {
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (_) => ConfirmTeam(
+                                //             teamID: data.me!.teamID)));
+                                // return;
+
                                 if (auth.currentUser != null) {
                                   Navigator.push(context,
                                       LeftTransition(child: const TopUp()));
@@ -203,11 +211,12 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                     Icon(
                                       auth.currentUser != null
                                           ? FontAwesomeIcons.plus
-                                          : Icons.person_add_alt_1_rounded,
-                                      size: 30,
+                                          : FontAwesomeIcons
+                                              .arrowRightToBracket,
+                                      size: 20,
                                       color: Colors.white,
                                     ),
-                                    if (auth.currentUser != null)
+                                    if (false)
                                       FloatingActionButton(
                                         backgroundColor: Colors.white,
                                         foregroundColor: Globals.black,
@@ -238,48 +247,52 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                             }
                           },
                           customBorder: Globals.radius(16),
-                          child: Column(
-                            children: [
-                              const Row(
-                                children: [
-                                  Card(
-                                    shape: CircleBorder(),
-                                    child: SizedBox(
-                                      height: 10,
-                                      width: 10,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Card(
+                                      shape: CircleBorder(),
+                                      child: SizedBox(
+                                        height: 8,
+                                        width: 8,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Card(
-                                    shape: CircleBorder(),
-                                    child: SizedBox(
-                                      height: 10,
-                                      width: 10,
+                                    SizedBox(width: 2),
+                                    Card(
+                                      shape: CircleBorder(),
+                                      child: SizedBox(
+                                        height: 8,
+                                        width: 8,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  const Card(
-                                    shape: CircleBorder(),
-                                    child: SizedBox(
-                                      height: 10,
-                                      width: 10,
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    const Card(
+                                      shape: CircleBorder(),
+                                      child: SizedBox(
+                                        height: 8,
+                                        width: 8,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Card(
-                                    shape: Globals.radius(4),
-                                    child: const SizedBox(
-                                      height: 10,
-                                      width: 10,
+                                    const SizedBox(width: 2),
+                                    Card(
+                                      shape: Globals.radius(4),
+                                      child: const SizedBox(
+                                        height: 8,
+                                        width: 8,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         forceElevated: false,
@@ -388,34 +401,63 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                                                 MainAxisAlignment
                                                                     .center,
                                                             children: [
-                                                              const Row(
-                                                                children: [
-                                                                  Icon(
-                                                                    FontAwesomeIcons
-                                                                        .wallet,
-                                                                    size: 35,
-                                                                    color: Globals
-                                                                        .primaryColor,
-                                                                  ),
-                                                                  Text(
-                                                                    "  Balance:",
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontFamily:
-                                                                          "OpenSans",
-                                                                      fontSize:
-                                                                          14,
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  showCupertinoDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (_) =>
+                                                                              CupertinoAlertDialog(
+                                                                                title: const Text("HoneyPot Contest"),
+                                                                                content: const Column(
+                                                                                  children: [
+                                                                                    Text(
+                                                                                      "Here everyone has a chance at the honeypot, Nobody is favored and we calculate points from the beginning of the season.\nThis Contest is the longest and has to do will Shear will and analyses of participants in order to win.\nParticipants can enter at anytime right up to GameWeek 10, after which we no longer accept new participants.\nThere will be a total of 30 winners at the end of the PL season",
+                                                                                      textAlign: TextAlign.left,
+                                                                                    )
+                                                                                  ],
+                                                                                ),
+                                                                                actions: [
+                                                                                  CupertinoDialogAction(
+                                                                                    child: const Text("Okay"),
+                                                                                    isDefaultAction: true,
+                                                                                    textStyle: Globals.primaryText,
+                                                                                    onPressed: () => Navigator.pop(context),
+                                                                                  )
+                                                                                ],
+                                                                              ));
+                                                                },
+                                                                child:
+                                                                    const Row(
+                                                                  children: [
+                                                                    Icon(
+                                                                      FontAwesomeIcons
+                                                                          .wallet,
+                                                                      size: 35,
                                                                       color: Globals
                                                                           .primaryColor,
                                                                     ),
-                                                                  ),
-                                                                ],
+                                                                    Text(
+                                                                      "  Entry Fee:",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            "OpenSans",
+                                                                        fontSize:
+                                                                            14,
+                                                                        color: Globals
+                                                                            .primaryColor,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
                                                               ),
                                                               const SizedBox(
                                                                 width: 25.0,
                                                               ),
                                                               const Text(
-                                                                "15,000 CFA",
+                                                                "2,000 CFA",
                                                                 style:
                                                                     TextStyle(
                                                                   fontFamily:
@@ -457,13 +499,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                                                           crossAxisAlignment:
                                                                               CrossAxisAlignment.start,
                                                                           children: [
-                                                                            Text("It costs 200 Frs to join the Game Week. The top 4 of participating users get the HoneyPot Split into a ratio of 60 20 10 10"),
-                                                                            Text("Example:"),
-                                                                            Text("If the HoneyPot is 100,000frs then the ratio would look like the following:"),
-                                                                            Text("- 1st Place 60,000 cfa"),
-                                                                            Text("- 2nd Place 20,000 cfa"),
-                                                                            Text("- 3rd Place 10,000 cfa"),
-                                                                            Text("- 4th Place 10,000 cfa"),
+                                                                            Text(" - 1st Place: 20% of the total Jackpot"),
+                                                                            Text("   - 2nd Place: 15% of the total Jackpot"),
+                                                                            Text(" - 3rd Place: 10% of the total Jackpot"),
+                                                                            Text(" - 4th - 10th Place: Equal share of 20% of the total Jackpot"),
+                                                                            Text("- 11th - 20th Place: Equal share of 15% of the total Jackpot"),
+                                                                            Text("- 21st - 30th Place: Equal share of 10% of the total Jackpot"),
+                                                                            Text("You can join right up to Game Week 26"),
                                                                             SizedBox(height: 5),
                                                                             Text("Note: The people eligible for the HoneyPot money are the ones who put in their money before the gameweek starts"),
                                                                           ],
@@ -477,9 +519,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                                                             isDestructiveAction:
                                                                                 false,
                                                                             child:
-                                                                                Text(
-                                                                              "Join Gameweek",
-                                                                              style: GoogleFonts.poppins(color: const Color(0xff000000), fontWeight: FontWeight.w600),
+                                                                                const Text(
+                                                                              "Join Now",
+                                                                              style: Globals.primaryText,
                                                                             ),
                                                                           ),
                                                                           CupertinoDialogAction(
@@ -497,9 +539,15 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                                                           ),
                                                                         ],
                                                                         title: const Text(
-                                                                            "Joing Gameweek 26"),
+                                                                            "Number of Winners and Prizes"),
                                                                       ),
-                                                                    );
+                                                                    ).then(
+                                                                        (value) {
+                                                                      if (value ==
+                                                                          true) {
+                                                                        data.joinJackpot();
+                                                                      }
+                                                                    });
 
                                                                     // Navigator.push(
                                                                     //     context,
@@ -537,38 +585,39 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                               }),
                         ),
                       ])),
-                      SliverAppBar(
-                        pinned: true,
-                        floating: true,
-                        snap: true,
-                        backgroundColor: Globals.black,
-                        expandedHeight: size.height * .3,
-                        flexibleSpace: FlexibleSpaceBar(
-                          stretchModes: const [
-                            StretchMode.blurBackground,
-                            StretchMode.zoomBackground,
-                            StretchMode.fadeTitle,
-                          ],
-                          background: Stack(
-                            children: [
-                              CachedNetworkImage(
-                                width: double.infinity,
-                                height: double.infinity,
-                                imageUrl:
-                                    "https://z-p3-scontent.fdla2-1.fna.fbcdn.net/v/t39.30808-6/323635083_713393020285164_8359622157073999088_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=783fdb&_nc_eui2=AeGVYG5gVwCBN9oUMPIDHnidQj3CTlGg1mBCPcJOUaDWYLgz0c6EYfGW2hTd8gOAjuHEZzCi22upIf9TwS0e7hag&_nc_ohc=U6TXRaDeuGIAX-Kxp0f&_nc_zt=23&_nc_ht=z-p3-scontent.fdla2-1.fna&oh=00_AfB8svYuVvbMdzaibj11ygudjy11FaHhrcK9MnxjNg0kJQ&oe=65D5EE22",
-                                placeholder: (context, url) => placeholder,
-                                errorWidget: (context, url, error) =>
-                                    errorWidget2,
-                                fit: BoxFit.cover,
-                              ),
-                              Container(
-                                color: Globals.black.withOpacity(.1),
-                              )
+                      if (false)
+                        SliverAppBar(
+                          pinned: true,
+                          floating: true,
+                          snap: true,
+                          backgroundColor: Globals.black,
+                          expandedHeight: size.height * .3,
+                          flexibleSpace: FlexibleSpaceBar(
+                            stretchModes: const [
+                              StretchMode.blurBackground,
+                              StretchMode.zoomBackground,
+                              StretchMode.fadeTitle,
                             ],
+                            background: Stack(
+                              children: [
+                                CachedNetworkImage(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  imageUrl:
+                                      "https://z-p3-scontent.fdla2-1.fna.fbcdn.net/v/t39.30808-6/323635083_713393020285164_8359622157073999088_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=783fdb&_nc_eui2=AeGVYG5gVwCBN9oUMPIDHnidQj3CTlGg1mBCPcJOUaDWYLgz0c6EYfGW2hTd8gOAjuHEZzCi22upIf9TwS0e7hag&_nc_ohc=U6TXRaDeuGIAX-Kxp0f&_nc_zt=23&_nc_ht=z-p3-scontent.fdla2-1.fna&oh=00_AfB8svYuVvbMdzaibj11ygudjy11FaHhrcK9MnxjNg0kJQ&oe=65D5EE22",
+                                  placeholder: (context, url) => placeholder,
+                                  errorWidget: (context, url, error) =>
+                                      errorWidget2,
+                                  fit: BoxFit.cover,
+                                ),
+                                Container(
+                                  color: Globals.black.withOpacity(.1),
+                                )
+                              ],
+                            ),
+                            title: const Text("Back your Team"),
                           ),
-                          title: const Text("Back your Team"),
                         ),
-                      ),
                       SliverList(
                           delegate:
                               SliverChildListDelegate([const GroupGamelist()]))
@@ -579,15 +628,15 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                 height: _opened ? size.height * .85 : kToolbarHeight * 2,
                 curve: Curves.fastLinearToSlowEaseIn,
                 duration: const Duration(milliseconds: 1200),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(boxShadow: [
-                    if (_opened)
-                      BoxShadow(
-                          blurRadius: 200,
-                          spreadRadius: 60,
-                          color: Globals.primaryColor.withOpacity(.25))
-                  ]),
-                  child: ClipRRect(
+                child: ClipRRect(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(boxShadow: [
+                      if (_opened)
+                        BoxShadow(
+                            blurRadius: 200,
+                            spreadRadius: 60,
+                            color: Globals.primaryColor.withOpacity(.15))
+                    ]),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: Material(
@@ -976,13 +1025,15 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   curve: Curves.fastEaseInToSlowEaseOut,
                   left: 0,
                   right: 0,
-                  bottom: 0,
-                  top: data.showLoader ? 0 : size.height,
+                  top: 0,
+                  height: !data.showLoader ? 0 : size.height,
                   duration: Globals.mainDuration,
                   child: Material(
                     elevation: 0,
                     color: Colors.transparent,
                     child: ListView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
                       children: [
                         Container(
                           width: size.width,
@@ -1013,111 +1064,112 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                       ],
                     ),
                   )),
-              AnimatedPositioned(
-                  duration: Globals.mainDurationLonger,
-                  curve: Curves.fastLinearToSlowEaseIn,
-                  left: 0,
-                  top: 0,
-                  width: size.width,
-                  height: size.height,
-                  child: AnimatedSwitcher(
-                    duration: Globals.mainDuration,
-                    switchInCurve: Curves.fastEaseInToSlowEaseOut,
-                    switchOutCurve: Curves.fastLinearToSlowEaseIn,
-                    transitionBuilder: (child, animation) => FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
-                    child: data.me != null && data.me!.teamID != 0
-                        ? const SizedBox.shrink()
-                        : Material(
-                            elevation: 0,
-                            color: Globals.white,
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 9,
-                                sigmaY: 9,
-                              ),
-                              child: SizedBox(
-                                width: size.width,
-                                height: size.height,
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    YoutubePlayer(
-                                      onReady: () {
-                                        // _controller.addListener();
-                                        // _controller.toggleFullScreenMode();
-                                        _controller.play();
-                                      },
-                                      controller: _controller,
-                                      showVideoProgressIndicator: true,
-                                    ),
-                                    const Column(
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 30),
-                                          child: Text(
-                                            "Connect your team",
-                                            textAlign: TextAlign.center,
-                                            style: Globals.heading,
-                                          ),
-                                        ),
-                                        space,
-                                        ListTile(
-                                          title: Text(
-                                            "Login to your FPL account",
-                                            style: Globals.title,
-                                          ),
-                                          subtitle: Text(
-                                            "You can create a new one or reset your password",
-                                            style: Globals.greySubtitle,
-                                          ),
-                                        ),
-                                        ListTile(
-                                          title: Text(
-                                            "What to note",
-                                            style: Globals.title,
-                                          ),
-                                          subtitle: Text(
-                                            "You can only associate your Team to one account",
-                                            style: Globals.greySubtitle,
-                                          ),
-                                        ),
-                                        ListTile(
-                                          title: Text(
-                                            "Limitations",
-                                            style: Globals.title,
-                                          ),
-                                          subtitle: Text(
-                                            "You can only get your ID by using logging into a web browser and not the FPL App",
-                                            style: Globals.greySubtitle,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 58.0),
-                                      child: MaterialButton(
-                                        onPressed: () {
-                                          _launchUrl(data);
+              if (auth.currentUser != null)
+                AnimatedPositioned(
+                    duration: Globals.mainDurationLonger,
+                    curve: Curves.fastLinearToSlowEaseIn,
+                    left: 0,
+                    top: 0,
+                    width: size.width,
+                    height: size.height,
+                    child: AnimatedSwitcher(
+                      duration: Globals.mainDuration,
+                      switchInCurve: Curves.fastEaseInToSlowEaseOut,
+                      switchOutCurve: Curves.fastLinearToSlowEaseIn,
+                      transitionBuilder: (child, animation) => FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      ),
+                      child: Globals.verified
+                          ? const SizedBox.shrink()
+                          : Material(
+                              elevation: 0,
+                              color: Globals.white,
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 9,
+                                  sigmaY: 9,
+                                ),
+                                child: SizedBox(
+                                  width: size.width,
+                                  height: size.height,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      YoutubePlayer(
+                                        onReady: () {
+                                          // _controller.addListener();
+                                          // _controller.toggleFullScreenMode();
+                                          _controller.play();
                                         },
-                                        height: 55,
-                                        color: Globals.primaryColor,
-                                        minWidth: size.width * .8,
-                                        textColor: Globals.white,
-                                        elevation: 20,
-                                        child: const Text("Get your Team ID"),
+                                        controller: _controller,
+                                        showVideoProgressIndicator: true,
                                       ),
-                                    )
-                                  ],
+                                      const Column(
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 30),
+                                            child: Text(
+                                              "Connect your team",
+                                              textAlign: TextAlign.center,
+                                              style: Globals.heading,
+                                            ),
+                                          ),
+                                          space,
+                                          ListTile(
+                                            title: Text(
+                                              "Login to your FPL account",
+                                              style: Globals.title,
+                                            ),
+                                            subtitle: Text(
+                                              "You can create a new one or reset your password",
+                                              style: Globals.greySubtitle,
+                                            ),
+                                          ),
+                                          ListTile(
+                                            title: Text(
+                                              "What to note",
+                                              style: Globals.title,
+                                            ),
+                                            subtitle: Text(
+                                              "You can only associate your Team to one account",
+                                              style: Globals.greySubtitle,
+                                            ),
+                                          ),
+                                          ListTile(
+                                            title: Text(
+                                              "Limitations",
+                                              style: Globals.title,
+                                            ),
+                                            subtitle: Text(
+                                              "You can only get your ID by using logging into a web browser and not the FPL App",
+                                              style: Globals.greySubtitle,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 58.0),
+                                        child: MaterialButton(
+                                          onPressed: () {
+                                            _launchUrl(data);
+                                          },
+                                          height: 55,
+                                          color: Globals.primaryColor,
+                                          minWidth: size.width * .8,
+                                          textColor: Globals.white,
+                                          elevation: 20,
+                                          child: const Text("Get your Team ID"),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                  ))
+                    ))
             ],
           );
         },
@@ -1218,7 +1270,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
               );
             }).then((value) {
           if (value.runtimeType == int) {
-            toast(message: "Done");
+            // toast(message: "Done");
             data.searchManager(value);
             Navigator.push(context,
                 MaterialPageRoute(builder: (_) => ConfirmTeam(teamID: value)));

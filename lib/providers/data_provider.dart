@@ -161,7 +161,7 @@ class DataProvider extends ChangeNotifier {
       Map<String, dynamic>? league;
       for (Map<String, dynamic> item in leagues) {
         if (item['id'] == Globals.classicLeague) {
-          toast(message: "Found Group");
+          // toast(message: "Found Group");
           league = item;
         }
       }
@@ -225,7 +225,19 @@ class DataProvider extends ChangeNotifier {
           await firestore.collection('users').doc(auth.currentUser!.uid).get();
       if (snap.exists) {
         me = CurrentUser.fromMap(snap.data()!, snap.id);
-        toast(message: "I've been loaded");
+
+        if (me!.teamID > 0) {
+          debugPrint("teamID: ${me!.teamID}");
+
+          await searchManager(me!.teamID);
+          if (foundTeam != null) {
+            me!.score = foundTeam!.score;
+            me!.rank = foundTeam!.rank;
+            me!.lastRank = foundTeam!.lastRank;
+            me!.total = foundTeam!.total;
+          }
+        }
+        // toast(message: "I've been loaded");
         notifyListeners();
       } else {
         await auth.signOut();
@@ -234,6 +246,26 @@ class DataProvider extends ChangeNotifier {
     } else {
       toast(message: "Signup or Login to continue");
     }
+  }
+
+  joinJackpot() async {
+    showLoader = true;
+    notifyListeners();
+
+    if (me!.balance > 2000) {
+      await firestore.collection("jackpot").doc(auth.currentUser!.uid).set({
+        "photo": me!.photo,
+        "phone": me!.phone,
+        "teamID": me!.teamID,
+        "paid": true,
+      }, SetOptions(merge: true));
+    } else {
+      await Future.delayed(const Duration(seconds: 2));
+      toast(message: "Insufficient account balance");
+    }
+
+    showLoader = false;
+    notifyListeners();
   }
 
   CurrentUser? me;

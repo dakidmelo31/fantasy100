@@ -11,6 +11,7 @@ import 'package:hospital/models/current_user.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/globals.dart';
 
@@ -661,6 +662,11 @@ class _SignupPageState extends State<SignupPage> {
                 return;
               }
 
+              if (snap.data()!['teamID'] > 0) {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setBool("verified", true);
+              }
+
               Future.delayed(Duration.zero, () {
                 debugPrint("Returning user coming");
                 Globals.signup(phone);
@@ -857,6 +863,11 @@ class _SignupPageState extends State<SignupPage> {
             toast(message: "You deleted your account")
                 .then((value) => toast(message: "Contact us for help"));
             return;
+          }
+
+          if (snap.data()!['teamID'] > 0) {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setBool("verified", true);
           }
 
           await messaging

@@ -32,13 +32,19 @@ class _HoneyPotState extends State<HoneyPot> {
             ),
           ),
           child: const Center(
-            child: Text(
-              '5,000 CFA',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 25,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '1,758,000 CFA',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 25,
+                  ),
+                ),
+                Text("For the lucky & Skilled?")
+              ],
             ),
           ),
         ),

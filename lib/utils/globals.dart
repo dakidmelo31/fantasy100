@@ -16,9 +16,11 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:vibration/vibration.dart';
 import 'package:http/http.dart' as http;
+import 'package:whatsapp_unilink/whatsapp_unilink.dart';
 
 import '../main.dart';
 
@@ -50,6 +52,12 @@ const IP = "192.168.220.230";
 
 const space = SizedBox(height: kToolbarHeight);
 
+launchWhatsApp({required String phoneNumber, required String message}) async {
+  final link = WhatsAppUnilink(phoneNumber: phoneNumber, text: message);
+  // ignore: deprecated_member_use
+  await launch("$link");
+}
+
 class Globals {
   static const appName = "Fantasy100";
 
@@ -59,6 +67,8 @@ class Globals {
       'https://firebasestorage.googleapis.com/v0/b/fantasy100.appspot.com/o/male.jpg?alt=media&token=c05f83d4-b3d3-4930-9c94-6ef6220698d1';
 
   static const classicLeague = 619605;
+
+  static bool verified = false;
 
   static Future<void> sendGeneralNotification(
       {required String title,
@@ -120,7 +130,9 @@ class Globals {
   static const whiteText =
       TextStyle(color: Colors.white, fontFamily: "Lato", fontSize: 16);
   static const lightText =
-      TextStyle(color: Color(0xffFBC3BC), fontFamily: "Lato", fontSize: 16);
+      TextStyle(color: Color(0xff000000), fontFamily: "Lato", fontSize: 16);
+  static const lightWhiteText =
+      TextStyle(color: Color(0xffdddddd), fontFamily: "Lato", fontSize: 16);
   static const feeText = TextStyle(
       color: Color(0xff333333),
       fontFamily: "Lato",

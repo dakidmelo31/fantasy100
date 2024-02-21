@@ -37,9 +37,9 @@ class _GroupCardState extends State<GroupCard> {
     return Padding(
       padding: const EdgeInsets.only(top: 25.0),
       child: Card(
-        color: Globals.black,
+        color: Globals.primaryColor,
         elevation: 0,
-        shadowColor: Colors.black,
+        shadowColor: Globals.primaryColor,
         surfaceTintColor: Globals.primaryColor,
         child: InkWell(
           customBorder: Globals.radius(20),
@@ -63,7 +63,7 @@ class _GroupCardState extends State<GroupCard> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
-                    color: Colors.black.withOpacity(.7),
+                    color: Globals.primaryColor.withOpacity(.7),
                     width: double.infinity,
                     height: 260,
                   ),
@@ -89,7 +89,7 @@ class _GroupCardState extends State<GroupCard> {
                               Hero(
                                   tag: card.title,
                                   child: Card(
-                                    color: Colors.black,
+                                    color: Globals.black,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(card.title,
@@ -137,12 +137,12 @@ class _GroupCardState extends State<GroupCard> {
                             child: Text(
                               "${prettyNumber(card.cashPrize)} CFA",
                               style: GoogleFonts.poppins(
-                                  color: const Color(0xFFE0CBA8), fontSize: 26),
+                                  color: const Color(0xFFffffff), fontSize: 26),
                             ),
                           ),
                           const Text(
                             "Tap for more info",
-                            style: Globals.greySubtitle,
+                            style: Globals.lightWhiteText,
                           )
                         ],
                       ),

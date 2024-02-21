@@ -1,6 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:hospital/main.dart';
+import 'package:hospital/models/manager.dart';
+
 class CurrentUser {
   final String phone;
   final String referralCode;
@@ -13,12 +16,12 @@ class CurrentUser {
   final bool referralSettled;
   final String location;
   final String teamName;
-  final int score;
-  final int lastRank;
-  final int rank;
-  final int total;
+  int score;
+  int lastRank;
+  int rank;
+  int total;
   final String username;
-  final int rankSort;
+  int rankSort;
   CurrentUser({
     required this.phone,
     required this.referralCode,
@@ -38,6 +41,18 @@ class CurrentUser {
     required this.username,
     required this.rankSort,
   });
+
+  late Manager manager = Manager(
+      id: teamID,
+      teamName: teamName,
+      score: score,
+      lastRank: lastRank,
+      rank: rank,
+      total: total,
+      username: username,
+      rankSort: rankSort,
+      entry: teamID,
+      image: photo);
 
   CurrentUser copyWith({
     String? phone,

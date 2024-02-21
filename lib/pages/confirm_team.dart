@@ -7,6 +7,7 @@ import 'package:hospital/providers/data_provider.dart';
 import 'package:hospital/utils/globals.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfirmTeam extends StatefulWidget {
   const ConfirmTeam({super.key, required this.teamID});
@@ -17,7 +18,7 @@ class ConfirmTeam extends StatefulWidget {
 }
 
 class _ConfirmTeamState extends State<ConfirmTeam> {
-  bool refreshing = false, confirming = false;
+  bool refreshing = false, confirming = false, confirmed = false;
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<DataProvider>(context, listen: true);
@@ -48,8 +49,7 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                           CupertinoDialogAction(
                             isDefaultAction: true,
                             onPressed: () {
-                              toast(message: "launching whatsapp");
-                              Navigator.pop(context);
+                              Navigator.pop(context, true);
                             },
                             child: const Icon(
                               FontAwesomeIcons.whatsapp,
@@ -68,7 +68,14 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                           ),
                         ],
                       ),
-                    );
+                    ).then((value) async {
+                      if (value == true) {
+                        launchWhatsApp(
+                            phoneNumber: "+237650981130",
+                            message:
+                                "Hi, I can't find my team from your app ( ${Globals.appName})");
+                      }
+                    });
                   },
                   icon: const Icon(FontAwesomeIcons.circleInfo)),
               const SizedBox(width: 10)
@@ -77,14 +84,27 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
             surfaceTintColor: Colors.white,
             foregroundColor: Globals.black,
             backgroundColor: Globals.white,
-            title: Text("Checking ${widget.teamID}"),
+            title: Row(
+              children: [
+                const Text("Looking up  "),
+                Text(
+                  "${widget.teamID}",
+                  style: Globals.heading,
+                ),
+              ],
+            ),
             forceMaterialTransparency: false,
           ),
           body: NotificationListener<ScrollNotification>(
             onNotification: (notification) {
-              if (notification is ScrollNotification &&
-                  notification.metrics.extentBefore == 0) {
+              // debugPrint("Interest: " + notification.metrics.pixels.toString());
+              // debugPrint(
+              //     "Total: " + notification.metrics.extentTotal.toString());
+              if (!confirmed &&
+                  !confirming &&
+                  notification.metrics.pixels < -100) {
                 HapticFeedback.heavyImpact();
+
                 if (!refreshing) {
                   setState(() {
                     refreshing = true;
@@ -92,11 +112,14 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                   toast(message: "Checking again");
                   Future.delayed(const Duration(milliseconds: 500), () {
                     if (mounted) {
+                      data.foundTeam = null;
+
                       data.searchManager(widget.teamID);
-                      Future.delayed(Duration(seconds: 4), () {
-                        setState(() {
-                          refreshing = false;
-                        });
+                      Future.delayed(const Duration(seconds: 4), () {
+                        if (mounted) {}
+                      });
+                      setState(() {
+                        refreshing = false;
                       });
                     }
                   });
@@ -128,228 +151,319 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                         switchOutCurve: Curves.fastLinearToSlowEaseIn,
                         transitionBuilder: (child, animation) =>
                             ScaleTransition(scale: animation, child: child),
-                        child: data.foundTeam == null
+                        child: refreshing || data.foundTeam == null
                             ? data.failed
                                 ? const Text("Failed to get user")
                                 : placeholder
                             : confirming
-                                ? Lottie.asset(
-                                    "$dir/misc10.json",
-                                    width: 170,
-                                    fit: BoxFit.cover,
-                                    alignment: Alignment.center,
-                                    repeat: true,
-                                    reverse: true,
-                                    filterQuality: FilterQuality.high,
-                                    options:
-                                        LottieOptions(enableMergePaths: true),
-                                  )
-                                : Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Card(
-                                      surfaceTintColor: Globals.primaryColor,
-                                      elevation: 15,
-                                      shadowColor:
-                                          Globals.black.withOpacity(.1),
-                                      child: InkWell(
-                                        customBorder: Globals.radius(10),
-                                        onTap: () {
-                                          HapticFeedback.heavyImpact();
-                                        },
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(18.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text(
-                                                    "Team Name",
-                                                    style: Globals.subtitle,
-                                                  ),
-                                                  Text(
-                                                    data.foundTeam!.teamName,
-                                                    style: Globals.title,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(18.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text(
-                                                    "Username",
-                                                    style: Globals.subtitle,
-                                                  ),
-                                                  Text(
-                                                    data.foundTeam!.username,
-                                                    style: Globals.title,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(18.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text(
-                                                    "Current Ranking",
-                                                    style: Globals.subtitle,
-                                                  ),
-                                                  Row(
+                                ? placeholder
+                                : confirmed
+                                    ? Lottie.asset(
+                                        "$dir/misc10.json",
+                                        width: 170,
+                                        fit: BoxFit.cover,
+                                        alignment: Alignment.center,
+                                        repeat: true,
+                                        filterQuality: FilterQuality.high,
+                                        options: LottieOptions(
+                                            enableMergePaths: true),
+                                      )
+                                    : Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Card(
+                                          surfaceTintColor:
+                                              Globals.primaryColor,
+                                          elevation: 15,
+                                          shadowColor:
+                                              Globals.black.withOpacity(.1),
+                                          child: InkWell(
+                                            customBorder: Globals.radius(10),
+                                            onTap: () {
+                                              HapticFeedback.heavyImpact();
+                                            },
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      18.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
                                                       const Text(
-                                                        "#",
-                                                        style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w900,
-                                                            color:
-                                                                Globals.black,
-                                                            fontSize: 20),
+                                                        "Team Name",
+                                                        style: Globals.subtitle,
                                                       ),
                                                       Text(
-                                                        " " +
-                                                            prettyNumber(data
-                                                                .foundTeam!
-                                                                .rank),
+                                                        data.foundTeam!
+                                                            .teamName,
                                                         style: Globals.title,
                                                       ),
                                                     ],
                                                   ),
-                                                ],
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(18.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text(
-                                                    "GW 25 Points",
-                                                    style: Globals.subtitle,
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      18.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        "Username",
+                                                        style: Globals.subtitle,
+                                                      ),
+                                                      Text(
+                                                        data.foundTeam!
+                                                            .username,
+                                                        style: Globals.title,
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Text(
-                                                    prettyNumber(
-                                                        data.foundTeam!.score),
-                                                    style: Globals.heading,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Card(
-                                              elevation: 0,
-                                              shape:
-                                                  const RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                topLeft: Radius.zero,
-                                                topRight: Radius.zero,
-                                                bottomLeft: Radius.circular(10),
-                                                bottomRight:
-                                                    Radius.circular(10),
-                                              )),
-                                              color: Colors.white,
-                                              surfaceTintColor: Colors.white,
-                                              margin: EdgeInsets.zero,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(18.0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    SizedBox(
-                                                      width: size.width * .55,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      18.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        "Current Ranking",
+                                                        style: Globals.subtitle,
+                                                      ),
+                                                      Row(
                                                         children: [
-                                                          data.foundTeam!
-                                                                  .verified
-                                                              ? const Text(
-                                                                  "Team already Claimed",
-                                                                  style: Globals
-                                                                      .title,
-                                                                )
-                                                              : const Text(
-                                                                  "Claim your team",
-                                                                  style: Globals
-                                                                      .primaryTitle,
-                                                                ),
                                                           const Text(
-                                                            "Choose verify team",
-                                                            style: Globals
-                                                                .greySubtitle,
-                                                          )
+                                                            "#",
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w900,
+                                                                color: Globals
+                                                                    .black,
+                                                                fontSize: 20),
+                                                          ),
+                                                          Text(
+                                                            " ${prettyNumber(data.foundTeam!.rank)}",
+                                                            style:
+                                                                Globals.title,
+                                                          ),
                                                         ],
                                                       ),
-                                                    ),
-                                                    CupertinoSwitch(
-                                                      value: data
-                                                          .foundTeam!.verified,
-                                                      activeColor: const Color(
-                                                          0xff00aa00),
-                                                      onChanged: (value) {},
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      18.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        "GW 25 Points",
+                                                        style: Globals.subtitle,
+                                                      ),
+                                                      Text(
+                                                        prettyNumber(data
+                                                            .foundTeam!.score),
+                                                        style: Globals.heading,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Card(
+                                                  elevation: 0,
+                                                  shape:
+                                                      const RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                    topLeft: Radius.zero,
+                                                    topRight: Radius.zero,
+                                                    bottomLeft:
+                                                        Radius.circular(10),
+                                                    bottomRight:
+                                                        Radius.circular(10),
+                                                  )),
+                                                  color: Colors.white,
+                                                  surfaceTintColor:
+                                                      Colors.white,
+                                                  margin: EdgeInsets.zero,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            18.0),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        SizedBox(
+                                                          width:
+                                                              size.width * .55,
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              data.foundTeam!
+                                                                      .verified
+                                                                  ? const Text(
+                                                                      "Team already Claimed",
+                                                                      style: Globals
+                                                                          .title,
+                                                                    )
+                                                                  : const Text(
+                                                                      "Claim your team",
+                                                                      style: Globals
+                                                                          .primaryTitle,
+                                                                    ),
+                                                              const Text(
+                                                                "Choose verify team",
+                                                                style: Globals
+                                                                    .greySubtitle,
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        CupertinoSwitch(
+                                                          value: data.foundTeam!
+                                                              .verified,
+                                                          activeColor:
+                                                              const Color(
+                                                                  0xff00aa00),
+                                                          onChanged: (value) {},
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 48.0),
-                        child: Hero(
-                          tag: "userFloatingButton",
-                          child: MaterialButton(
-                            color: Globals.black,
-                            shape: Globals.radius(10),
-                            elevation: 0,
-                            textColor: Globals.white,
-                            onPressed: () async {
-                              toast(message: "confirmed");
-                              setState(() {
-                                confirming = true;
-                              });
+                      if (data.foundTeam == null)
+                        const Text("")
+                      else
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 48.0),
+                          child: Hero(
+                            tag: "userFloatingButton",
+                            child: MaterialButton(
+                              color: data.foundTeam!.verified
+                                  ? Globals.white
+                                  : Globals.black,
+                              shape: Globals.radius(10),
+                              elevation: data.foundTeam!.verified ? 10 : 0,
+                              textColor: data.foundTeam!.verified
+                                  ? Globals.black
+                                  : Globals.white,
+                              onPressed: () async {
+                                if (data.foundTeam!.verified) {
+                                  String number =
+                                      data.foundTeam!.phone.split("+")[1];
+                                  debugPrint(number);
+                                  bool? outcome = await showCupertinoDialog(
+                                      context: context,
+                                      builder: (_) {
+                                        return CupertinoAlertDialog(
+                                            content: const SelectableText(
+                                              "In case you mistakenly type in the wrong number you might end up bumping into another user's management team which would only lead to confusion. \nWith This in min you need to be sure it's your team before raising disputes",
+                                              textAlign: TextAlign.left,
+                                            ),
+                                            actions: [
+                                              CupertinoDialogAction(
+                                                isDefaultAction: true,
+                                                textStyle: Globals.primaryText,
+                                                child: const Text("I am Sure"),
+                                                onPressed: () {
+                                                  Navigator.pop(context, true);
+                                                },
+                                              ),
+                                              CupertinoDialogAction(
+                                                isDefaultAction: false,
+                                                isDestructiveAction: true,
+                                                child: const Text("Nevermind"),
+                                                onPressed: () {
+                                                  Navigator.pop(context, false);
+                                                },
+                                              ),
+                                            ],
+                                            title: const Text("Are you sure"));
+                                      });
 
-                              firestore
-                                  .collection("users")
-                                  .doc(auth.currentUser!.uid)
-                                  .set(data.foundTeam!.toMap(),
-                                      SetOptions(merge: true));
+                                  if (outcome == true) {
+                                    toast(
+                                        message:
+                                            "Okay we'll look into it asap");
 
-                              // // data.searchManager(widget.teamID);
-                              // data.searchManager(8513103);
-                            },
-                            child: const Padding(
-                              padding: EdgeInsets.all(14.0),
-                              child:
-                                  Text("Yes, I confirm that this is my Team"),
+                                    firestore.collection("disputes").add({
+                                      "username": data.me!.username,
+                                      "phone": data.me!.phone,
+                                      "photo": data.me!.photo,
+                                      "filerID": auth.currentUser!.uid,
+                                      "team": data.foundTeam!.toMap(),
+                                      "resolved": false
+                                    });
+
+                                    launchWhatsApp(
+                                        phoneNumber: number,
+                                        message:
+                                            "Hey, I see you have my team in ${Globals.appName}: *${data.foundTeam!.teamName}*");
+                                  }
+                                  return;
+                                }
+                                setState(() {
+                                  confirming = true;
+                                });
+
+                                firestore
+                                    .collection("users")
+                                    .doc(auth.currentUser!.uid)
+                                    .set(data.foundTeam!.toMap(),
+                                        SetOptions(merge: true))
+                                    .then((value) {
+                                  if (mounted) {
+                                    setState(() {
+                                      confirming = false;
+                                      confirmed = true;
+                                    });
+                                  }
+                                });
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.setBool("verified", true);
+
+                                // // data.searchManager(widget.teamID);
+                                // data.searchManager(8513103);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(14.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(FontAwesomeIcons.whatsapp,
+                                        color: Color(0xff00aa00)),
+                                    const SizedBox(
+                                      width: 26,
+                                    ),
+                                    Text(data.foundTeam!.verified
+                                        ? "Submit Dispute"
+                                        : "Yes, I confirm that this is my Team"),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      )
+                        )
                     ],
                   ),
                 ),
