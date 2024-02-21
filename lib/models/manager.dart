@@ -12,13 +12,14 @@ class Manager {
   final int rankSort;
   bool isWaiting;
   final int entry;
-  String image;
+  String image, phone;
 
   bool verified;
   Manager({
     required this.id,
     this.isWaiting = false,
     this.verified = false,
+    this.phone = '',
     required this.teamName,
     required this.score,
     required this.lastRank,
@@ -59,12 +60,16 @@ class Manager {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'teamID': id,
       'name': teamName,
       'score': score,
       'lastRank': lastRank,
       'rank': rank,
       'total': total,
       'username': username,
+      'teamName': username,
+      "verified": verified,
+      "isWaiting": isWaiting,
       'rankSort': rankSort,
       'entry': entry,
       'image': image,

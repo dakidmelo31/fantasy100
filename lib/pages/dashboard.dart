@@ -212,7 +212,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                         backgroundColor: Colors.white,
                                         foregroundColor: Globals.black,
                                         shape: const CircleBorder(),
-                                        onPressed: _launchUrl,
+                                        onPressed: () {
+                                          _launchUrl(data);
+                                        },
                                         child: const Icon(
                                             FontAwesomeIcons.signIn,
                                             size: 15),
@@ -1018,88 +1020,103 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                   top: 0,
                   width: size.width,
                   height: size.height,
-                  child: Material(
-                    elevation: 0,
-                    color: Globals.white,
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 9,
-                        sigmaY: 9,
-                      ),
-                      child: SizedBox(
-                        width: size.width,
-                        height: size.height,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            YoutubePlayer(
-                              onReady: () {
-                                // _controller.addListener();
-                                // _controller.toggleFullScreenMode();
-                                _controller.play();
-                              },
-                              controller: _controller,
-                              showVideoProgressIndicator: true,
-                            ),
-                            const Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(top: 30),
-                                  child: Text(
-                                    "Connect your team",
-                                    textAlign: TextAlign.center,
-                                    style: Globals.heading,
-                                  ),
-                                ),
-                                space,
-                                ListTile(
-                                  title: Text(
-                                    "Login to your FPL account",
-                                    style: Globals.title,
-                                  ),
-                                  subtitle: Text(
-                                    "You can create a new one or reset your password",
-                                    style: Globals.greySubtitle,
-                                  ),
-                                ),
-                                ListTile(
-                                  title: Text(
-                                    "What to note",
-                                    style: Globals.title,
-                                  ),
-                                  subtitle: Text(
-                                    "You can only associate your Team to one account",
-                                    style: Globals.greySubtitle,
-                                  ),
-                                ),
-                                ListTile(
-                                  title: Text(
-                                    "Limitations",
-                                    style: Globals.title,
-                                  ),
-                                  subtitle: Text(
-                                    "You can only get your ID by using logging into a web browser and not the FPL App",
-                                    style: Globals.greySubtitle,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 58.0),
-                              child: MaterialButton(
-                                onPressed: _launchUrl,
-                                height: 55,
-                                color: Globals.primaryColor,
-                                minWidth: size.width * .8,
-                                textColor: Globals.white,
-                                elevation: 20,
-                                child: const Text("Get your Team ID"),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                  child: AnimatedSwitcher(
+                    duration: Globals.mainDuration,
+                    switchInCurve: Curves.fastEaseInToSlowEaseOut,
+                    switchOutCurve: Curves.fastLinearToSlowEaseIn,
+                    transitionBuilder: (child, animation) => FadeTransition(
+                      opacity: animation,
+                      child: child,
                     ),
+                    child: data.me != null && data.me!.teamID != 0
+                        ? const SizedBox.shrink()
+                        : Material(
+                            elevation: 0,
+                            color: Globals.white,
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(
+                                sigmaX: 9,
+                                sigmaY: 9,
+                              ),
+                              child: SizedBox(
+                                width: size.width,
+                                height: size.height,
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    YoutubePlayer(
+                                      onReady: () {
+                                        // _controller.addListener();
+                                        // _controller.toggleFullScreenMode();
+                                        _controller.play();
+                                      },
+                                      controller: _controller,
+                                      showVideoProgressIndicator: true,
+                                    ),
+                                    const Column(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 30),
+                                          child: Text(
+                                            "Connect your team",
+                                            textAlign: TextAlign.center,
+                                            style: Globals.heading,
+                                          ),
+                                        ),
+                                        space,
+                                        ListTile(
+                                          title: Text(
+                                            "Login to your FPL account",
+                                            style: Globals.title,
+                                          ),
+                                          subtitle: Text(
+                                            "You can create a new one or reset your password",
+                                            style: Globals.greySubtitle,
+                                          ),
+                                        ),
+                                        ListTile(
+                                          title: Text(
+                                            "What to note",
+                                            style: Globals.title,
+                                          ),
+                                          subtitle: Text(
+                                            "You can only associate your Team to one account",
+                                            style: Globals.greySubtitle,
+                                          ),
+                                        ),
+                                        ListTile(
+                                          title: Text(
+                                            "Limitations",
+                                            style: Globals.title,
+                                          ),
+                                          subtitle: Text(
+                                            "You can only get your ID by using logging into a web browser and not the FPL App",
+                                            style: Globals.greySubtitle,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 58.0),
+                                      child: MaterialButton(
+                                        onPressed: () {
+                                          _launchUrl(data);
+                                        },
+                                        height: 55,
+                                        color: Globals.primaryColor,
+                                        minWidth: size.width * .8,
+                                        textColor: Globals.white,
+                                        elevation: 20,
+                                        child: const Text("Get your Team ID"),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                   ))
             ],
           );
@@ -1113,8 +1130,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     flags: const YoutubePlayerFlags(
       forceHD: true,
       loop: false,
-      autoPlay: true,
-      mute: false,
+      autoPlay: false,
+      mute: true,
     ),
   );
 
@@ -1122,7 +1139,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   final TextEditingController _userIDController = TextEditingController();
 
-  Future<void> _launchUrl() async {
+  Future<void> _launchUrl(DataProvider data) async {
+    _controller.pause();
     await launchUrl(_url).then((value) {
       if (value) {
         showCupertinoDialog(
@@ -1153,8 +1171,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                             hintText: "Enter ID Number",
                             label: const Text("Manager ID"),
                             border: const OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Globals.black, width: 1),
+                                borderSide: BorderSide(
+                                    color: Globals.primaryColor, width: 1),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(10))),
                             suffix: FloatingActionButton.small(
@@ -1201,11 +1219,12 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             }).then((value) {
           if (value.runtimeType == int) {
             toast(message: "Done");
+            data.searchManager(value);
             Navigator.push(context,
-                MaterialPageRoute(builder: (_) => ConfirmTeam(userID: value)));
+                MaterialPageRoute(builder: (_) => ConfirmTeam(teamID: value)));
           } else if (value == true) {
             Future.delayed(Duration.zero, () {
-              _launchUrl();
+              _launchUrl(data);
             });
           }
         });

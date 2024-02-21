@@ -20,6 +20,8 @@ class DataProvider extends ChangeNotifier {
   List<Manager> managers = [];
   List<Player> players = [];
 
+  bool failed = false;
+
   DataProvider() {
     loadUser();
     loadOverviews();
@@ -86,7 +88,7 @@ class DataProvider extends ChangeNotifier {
     loadingManagers = true;
     var dio = Dio();
     String requestUrl =
-        'https://fantasy.premierleague.com/api/leagues-classic/619605/standings/';
+        'https://fantasy.premierleague.com/api/leagues-classic/${Globals.classicLeague}/standings/';
     // 'https://fantasy.premierleague.com/api/leagues-classic/1942089/standings/';
     if (hasNext) {
       currentPage += 1;
@@ -137,7 +139,62 @@ class DataProvider extends ChangeNotifier {
     return groups.firstWhere((element) => element.groupID == groupId);
   }
 
-  searchManager(int userID) {}
+  Manager? foundTeam;
+  searchManager(int userID) async {
+    debugPrint("userID: $userID");
+    failed = false;
+    var dio = Dio();
+    String requestUrl = 'https://fantasy.premierleague.com/api/entry/$userID/';
+    debugPrint(requestUrl);
+    var response = await dio.request(
+      requestUrl,
+      options: Options(
+        method: 'GET',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      // debugPrint(response.data.toString());
+      final data = response.data;
+      final leagues =
+          List<Map<String, dynamic>>.from(data['leagues']['classic']);
+      Map<String, dynamic>? league;
+      for (Map<String, dynamic> item in leagues) {
+        if (item['id'] == Globals.classicLeague) {
+          toast(message: "Found Group");
+          league = item;
+        }
+      }
+      final snap = await firestore
+          .collection("users")
+          .where("teamID", isEqualTo: data['id'])
+          .get();
+      bool isVerified = snap.docs.isNotEmpty;
+      debugPrint(snap.docs.length.toString());
+      foundTeam = Manager(
+        phone: !isVerified ? "" : snap.docs.first.data()['phone'],
+        image: !isVerified
+            ? Globals.photoPlaceholder
+            : snap.docs.first.data()['photo'],
+        id: data['id'],
+        teamName: data['name'],
+        score: data['summary_event_points'],
+        lastRank: league != null ? league['entry_last_rank'] : 0,
+        rank: league != null ? league['entry_rank'] : 0,
+        total: data['summary_overall_points'],
+        username: data['player_first_name'] + " " + data['player_last_name'],
+        rankSort: data['summary_overall_rank'],
+        entry: data['id'],
+        isWaiting: false,
+        verified: isVerified,
+      );
+      notifyListeners();
+    } else {
+      failed = true;
+      notifyListeners();
+    }
+  }
+
   bool showLoader = false;
   void loadScreen() {
     showLoader = true;
