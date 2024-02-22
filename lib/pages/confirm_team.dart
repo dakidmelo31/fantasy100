@@ -331,14 +331,30 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                                                             ],
                                                           ),
                                                         ),
-                                                        CupertinoSwitch(
-                                                          value: data.foundTeam!
-                                                              .verified,
-                                                          activeColor:
-                                                              const Color(
-                                                                  0xff00aa00),
-                                                          onChanged: (value) {},
-                                                        ),
+                                                        Icon(
+                                                            data.foundTeam!
+                                                                    .verified
+                                                                ? FontAwesomeIcons
+                                                                    .lock
+                                                                : FontAwesomeIcons
+                                                                    .lockOpen,
+                                                            color: data
+                                                                    .foundTeam!
+                                                                    .verified
+                                                                ? Globals.pink
+                                                                : const Color(
+                                                                    0xff00aa00)),
+                                                        if (false)
+                                                          CupertinoSwitch(
+                                                            value: data
+                                                                .foundTeam!
+                                                                .verified,
+                                                            activeColor:
+                                                                const Color(
+                                                                    0xff00aa00),
+                                                            onChanged:
+                                                                (value) {},
+                                                          ),
                                                       ],
                                                     ),
                                                   ),

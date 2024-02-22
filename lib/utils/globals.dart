@@ -48,7 +48,7 @@ Future<void> toast(
 }
 
 FirebaseMessaging messaging = FirebaseMessaging.instance;
-const IP = "192.168.220.230";
+const IP = "bidrush237-a95c8e09b8ee.herokuapp.com";
 
 const space = SizedBox(height: kToolbarHeight);
 
@@ -59,6 +59,54 @@ launchWhatsApp({required String phoneNumber, required String message}) async {
 }
 
 class Globals {
+  static Future<void> makeDeposit({required int amount}) async {
+    HapticFeedback.heavyImpact();
+
+    var dio = Dio();
+    const storage = FlutterSecureStorage();
+    final jwt = await storage.read(key: "jwt");
+    dio.options.headers["x-access-token"] = jwt.toString();
+    debugPrint("My id: ${auth.currentUser?.uid}");
+
+    debugPrint("URL: ${'https://$IP/api/fantasy/deposit'}");
+    var res = await dio.post('https://$IP/api/fantasy/deposit', data: {
+      "userID": auth.currentUser!.uid,
+      'amount': amount
+    }).catchError((onError) {
+      debugPrint("Error found: $onError");
+      return onError;
+    });
+    var json = res.data as Map<String, dynamic>;
+    debugPrint(res.toString());
+    toast(json["message"], length: Toast.LENGTH_LONG);
+  }
+
+  static Future<void> makeWithdrawal({required int amount}) async {
+    HapticFeedback.heavyImpact();
+    toast("Confirm on your Phone");
+
+    var dio = Dio();
+    const storage = FlutterSecureStorage();
+    final jwt = await storage.read(key: "jwt");
+    dio.options.headers["x-access-token"] = jwt.toString();
+    debugPrint("My id: ${auth.currentUser?.uid}");
+
+    debugPrint("URL: ${'https://$IP/api/v2/bidWithdrawal'}");
+    var res = await dio.post('https://$IP/api/v2/bidWithdrawal', data: {
+      "userID": auth.currentUser!.uid,
+      'amount': amount
+    }).catchError((onError) {
+      debugPrint("Error found: $onError");
+      return onError;
+    });
+    var json = res.data as Map<String, dynamic>;
+    debugPrint(res.toString());
+    toast(json["message"], length: Toast.LENGTH_LONG);
+    // debugPrint("$res");
+
+    // late Map payload;// = json.decode(ascii.decode(base64.decode(base64.normalize(jwt.split(".")[1]))));
+  }
+
   static const appName = "Fantasy100";
 
   static const brown = Color(0xff1A1423);
@@ -607,7 +655,32 @@ class Globals {
     );
   }
 
-  static void signup(String phone) {}
+  static Future<void> signup(String phone) async {
+    final dio = Dio();
+    dio.options.headers["x-access-token"] = auth.currentUser!.uid;
+    debugPrint("My id: ${auth.currentUser?.uid}");
+    IP;
+    debugPrint("URL: ${'https://$IP/api/fantasy/signup'}");
+    var res = await dio.post('https://$IP/api/fantasy/signup', data: {
+      "userID": auth.currentUser!.uid,
+      "phone": phone,
+    }).catchError((onError) {
+      debugPrint("Error found: $onError");
+      return onError;
+    });
+
+    var json = res.data as Map<String, dynamic>;
+    const secureStorage = FlutterSecureStorage();
+    if (json.containsKey("token")) {
+      debugPrint(json['token']);
+      secureStorage.write(key: "jwt", value: json['token']).then((value) {
+        toast("You're done");
+      });
+    } else {
+      toast(json['message']);
+      auth.signOut();
+    }
+  }
 
   static Future<void> googleSignup() async {
     GoogleSignInAccount? account = await googleSignIn.signIn();

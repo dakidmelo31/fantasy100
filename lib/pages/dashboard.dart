@@ -133,7 +133,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         snap: false,
                         expandedHeight: 100,
                         flexibleSpace: const FlexibleSpaceBar(
-                          title: Text("Mr Melo FC"),
+                          // title: Text("Mr Melo FC"),
                           stretchModes: [
                             StretchMode.blurBackground,
                           ],
