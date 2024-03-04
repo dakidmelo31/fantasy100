@@ -40,7 +40,8 @@ class ManagerOverlay extends StatelessWidget {
                         child: Card(
                           surfaceTintColor: Globals.primaryColor,
                           elevation: 15,
-                          shadowColor: Globals.black.withOpacity(.1),
+                          shadowColor:
+                              Globals.primaryBackground.withOpacity(.1),
                           child: InkWell(
                             customBorder: Globals.radius(10),
                             onTap: () {
@@ -99,7 +100,8 @@ class ManagerOverlay extends StatelessWidget {
                                             "#",
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w900,
-                                                color: Globals.black,
+                                                color:
+                                                    Globals.primaryBackground,
                                                 fontSize: 20),
                                           ),
                                           Text(
@@ -193,7 +195,7 @@ class ManagerOverlay extends StatelessWidget {
                     FloatingActionButton(
                       onPressed: () => Navigator.pop(context),
                       heroTag: "backbutton",
-                      backgroundColor: Globals.black,
+                      backgroundColor: Globals.primaryBackground,
                       foregroundColor: Colors.white,
                       shape: const CircleBorder(),
                       child: const Icon(FontAwesomeIcons.arrowLeftLong),

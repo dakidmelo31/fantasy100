@@ -188,8 +188,8 @@ class _DraggableCardState extends State<DraggableCard>
             color: Globals.brown,
             shape: Globals.radius(10),
             child: InkWell(
-              splashColor: Globals.black,
-              highlightColor: Globals.black,
+              splashColor: Globals.primaryBackground,
+              highlightColor: Globals.primaryBackground,
               onTap: widget.flipCallback,
               customBorder: Globals.radius(10),
               child: Padding(

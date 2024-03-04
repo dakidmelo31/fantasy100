@@ -101,7 +101,7 @@ class _HelpPageState extends State<HelpPage> {
       backgroundColor: Globals.backgroundColor,
       appBar: AppBar(
         title: Text("Help"),
-        foregroundColor: Globals.black,
+        foregroundColor: Globals.primaryBackground,
         backgroundColor: Globals.backgroundColor,
         elevation: 0,
       ),

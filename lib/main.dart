@@ -40,7 +40,7 @@ final StreamController<ReceivedNotification> didReceiveNotificationStream =
 final StreamController<String?> selectNotificationStream =
     StreamController<String?>.broadcast();
 
-const MethodChannel platform = MethodChannel("ndoyeeffect.online/bidwars237");
+const MethodChannel platform = MethodChannel(Globals.appName);
 
 class ReceivedNotification {
   final int id;

@@ -82,7 +82,7 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
             ],
             elevation: 0,
             surfaceTintColor: Colors.white,
-            foregroundColor: Globals.black,
+            foregroundColor: Globals.primaryBackground,
             backgroundColor: Globals.white,
             title: Row(
               children: [
@@ -174,8 +174,8 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                                           surfaceTintColor:
                                               Globals.primaryColor,
                                           elevation: 15,
-                                          shadowColor:
-                                              Globals.black.withOpacity(.1),
+                                          shadowColor: Globals.primaryBackground
+                                              .withOpacity(.1),
                                           child: InkWell(
                                             customBorder: Globals.radius(10),
                                             onTap: () {
@@ -244,7 +244,7 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                                                                     FontWeight
                                                                         .w900,
                                                                 color: Globals
-                                                                    .black,
+                                                                    .primaryBackground,
                                                                 fontSize: 20),
                                                           ),
                                                           Text(
@@ -375,11 +375,11 @@ class _ConfirmTeamState extends State<ConfirmTeam> {
                             child: MaterialButton(
                               color: data.foundTeam!.verified
                                   ? Globals.white
-                                  : Globals.black,
+                                  : Globals.primaryBackground,
                               shape: Globals.radius(10),
                               elevation: data.foundTeam!.verified ? 10 : 0,
                               textColor: data.foundTeam!.verified
-                                  ? Globals.black
+                                  ? Globals.primaryBackground
                                   : Globals.white,
                               onPressed: () async {
                                 if (data.foundTeam!.verified) {

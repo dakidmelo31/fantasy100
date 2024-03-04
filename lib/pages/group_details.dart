@@ -48,10 +48,10 @@ class _GroupDetailsState extends State<GroupDetails> {
                 shape: const CircleBorder(),
                 backgroundColor: card.iAmParticipating
                     ? Globals.primaryColor
-                    : Globals.black,
+                    : Globals.primaryBackground,
                 foregroundColor: !card.iAmParticipating
                     ? Globals.primaryColor
-                    : Globals.black,
+                    : Globals.primaryBackground,
                 onPressed: () {
                   if (card.iAmParticipating) {
                     toast(message: "Alraedy playing");
@@ -67,7 +67,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                 heroTag: "notification",
                 shape: const CircleBorder(),
                 backgroundColor: Colors.white,
-                foregroundColor: Globals.black,
+                foregroundColor: Globals.primaryBackground,
                 onPressed: () {
                   if (card.iAmParticipating) {
                     toast(message: "Notify Me");
@@ -103,7 +103,7 @@ class _GroupDetailsState extends State<GroupDetails> {
                                 "${prettyNumber(card.cashPrize)} CFA",
                                 style: GoogleFonts.poppins(
                                     fontSize: 30,
-                                    color: Globals.black,
+                                    color: Globals.primaryBackground,
                                     fontWeight: FontWeight.w600),
                               ),
                             ),

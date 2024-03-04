@@ -69,7 +69,7 @@ class _TransactionTileState extends State<TransactionTile> {
                                   bottomRight: Radius.circular(0),
                                   topRight: Radius.circular(0))),
                           elevation: 0,
-                          color: Globals.black,
+                          color: Globals.primaryBackground,
                           child: SizedBox(
                             height: 60,
                             width: 45,
@@ -134,7 +134,7 @@ class _TransactionTileState extends State<TransactionTile> {
                             children: [
                               Icon(
                                 FontAwesomeIcons.medal,
-                                color: Globals.black,
+                                color: Globals.primaryBackground,
                               )
                             ],
                           ),
@@ -233,8 +233,8 @@ class _TransactionTileState extends State<TransactionTile> {
                                 padding: const EdgeInsets.all(14.0),
                                 child: Text(
                                   prettyNumber(person.mandatoryGames),
-                                  style:
-                                      GoogleFonts.poppins(color: Globals.black),
+                                  style: GoogleFonts.poppins(
+                                      color: Globals.primaryBackground),
                                 ),
                               ),
                             )

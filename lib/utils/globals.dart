@@ -166,7 +166,7 @@ class Globals {
     return result;
   }
 
-  // static const primaryColor = Color(0xffFF0022);
+  static const primaryColor2 = Color(0xffFF0022);
   static const primaryColor = Color(0xff2B9720);
   // static const primaryColor = Color(0xffDD1C1A);
   static const backgroundColor = Color(0xfffcfcfc);
@@ -220,7 +220,7 @@ class Globals {
   static const mainDuration = Duration(milliseconds: 700);
   static const revDuration = Duration(milliseconds: 300);
 
-  static const black = Color(0xff1A1423);
+  static const primaryBackground = Color(0xFF000000);
   static const blacker = Color(0xFF2B2139);
   static const darkBlue = Color(0xff030027);
   static const lightBlack = Color(0xff1A1423);
@@ -416,72 +416,44 @@ class Globals {
       {required String title,
       required String body,
       required String image}) async {
-    const int maxProgress = 60;
-    int seconds = 90;
-    bool shouldCancelNotification = false;
+    const androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      Globals.appName,
+      'Main Fantasy Notifications',
+      channelDescription: 'Main news channel for app updates',
+      importance: Importance.max,
+      priority: Priority.high,
+      colorized: true,
+      color: Globals.primaryColor,
+      enableVibration: false,
+      groupKey: Globals.appName,
+    );
 
-    while (true) {
-      if (shouldCancelNotification) {
-        bool ans = await Future.delayed(const Duration(seconds: 76), () {
-          flutterLocalNotificationsPlugin.cancel(10);
-        }).then((value) {
-          return true;
-        });
-      }
+    // iOS notification settings
+    const darwinNotificationDetails = DarwinNotificationDetails(
+      interruptionLevel: InterruptionLevel.critical,
+      threadIdentifier: 'Parking',
+      subtitle: 'Santa Lucia Super Mall, Deido active parking',
+    );
 
-      if (seconds >= 90) {
-        break;
-      }
+    const notificationDetails = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: darwinNotificationDetails,
+    );
 
-      shouldCancelNotification = true;
-
-      await Future.delayed(const Duration(seconds: 1), () async {
-        // Android notification settings
-        final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-          'Parking',
-          'Parking Session',
-          channelDescription: 'Active Parking Session Notifications Go Here',
-          importance: Importance.low,
-          silent: true,
-          icon: "@drawable/app_icon",
-          priority: Priority.min,
-          ongoing: true,
-          showProgress: true,
-          maxProgress: maxProgress,
-          colorized: true,
-          color: Globals.primaryColor,
-          enableVibration: false,
-          indeterminate: false,
-          groupKey: "Parking",
-          onlyAlertOnce: true,
-          ticker: 'Active Parking: ${_formatTime(seconds)}',
-        );
-
-        // iOS notification settings
-        const darwinNotificationDetails = DarwinNotificationDetails(
-          categoryIdentifier: darwinNotificationCategoryText,
-          interruptionLevel: InterruptionLevel.critical,
-          threadIdentifier: 'Parking',
-          subtitle: 'Santa Lucia Super Mall, Deido active parking',
-        );
-
-        final notificationDetails = NotificationDetails(
-          android: androidPlatformChannelSpecifics,
-          iOS: darwinNotificationDetails,
-          macOS: darwinNotificationDetails,
-        );
-
-        seconds++;
-
-        await flutterLocalNotificationsPlugin.show(
-          10,
-          'Active Parking: ${_formatTime(seconds)}',
-          'Santa Lucia Super Mall, Deido active parking',
-          notificationDetails,
-          payload: 'parking##id',
-        );
-      });
-    }
+    debugPrint("gone through here");
+    await flutterLocalNotificationsPlugin
+        .show(
+      10,
+      title,
+      body,
+      notificationDetails,
+      payload: 'parking##id',
+    )
+        .then((value) {
+      toast("done sending notification");
+    }).catchError((onError) {
+      debugPrint("Error Notif: $onError");
+    });
   }
 
   static String _formatTime(int seconds) {
@@ -764,7 +736,8 @@ List<Map<String, dynamic>> dummyGroups = [
     "limit": 1000000,
     "closed": false,
     "cashPrize": 250000,
-    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "endsAt":
+        DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch,
     "winningPositions": [
       {
         "title": "First Position",
@@ -803,7 +776,8 @@ List<Map<String, dynamic>> dummyGroups = [
     "limit": 250000,
     "closed": false,
     "cashPrize": 50000,
-    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "endsAt":
+        DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch,
     "winningPositions": [
       {
         "title": "First Position",
@@ -848,7 +822,8 @@ List<Map<String, dynamic>> dummyGroups = [
     "limit": 750000,
     "closed": false,
     "cashPrize": 150000,
-    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "endsAt":
+        DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch,
     "winningPositions": [
       {
         "title": "First Position",
@@ -893,7 +868,8 @@ List<Map<String, dynamic>> dummyGroups = [
     "limit": 1000000,
     "closed": false,
     "cashPrize": 250000,
-    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "endsAt":
+        DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch,
     "winningPositions": [
       {
         "title": "First Position",
@@ -939,7 +915,8 @@ List<Map<String, dynamic>> dummyGroups = [
     "limit": 500000,
     "closed": false,
     "cashPrize": 100000,
-    "endsAt": DateTime.now().add(Duration(days: 12)).millisecondsSinceEpoch,
+    "endsAt":
+        DateTime.now().add(const Duration(days: 12)).millisecondsSinceEpoch,
     "winningPositions": [
       {
         "title": "First Position",

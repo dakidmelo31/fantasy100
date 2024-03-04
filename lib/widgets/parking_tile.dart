@@ -47,7 +47,7 @@ class _PlayerTileState extends State<PlayerTile> {
             children: [
               MaterialButton(
                 shape: const CircleBorder(),
-                color: Globals.black,
+                color: Globals.primaryBackground,
                 onPressed: () {
                   HapticFeedback.heavyImpact();
                 },

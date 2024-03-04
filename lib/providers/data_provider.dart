@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hospital/models/cash.dart';
 import 'package:hospital/models/manager.dart';
 import 'package:hospital/models/player.dart';
 
 import '../main.dart';
+import '../models/cash_model.dart';
 import '../models/current_user.dart';
 import '../models/group.dart';
 import '../models/overview.dart';
@@ -21,6 +23,36 @@ class DataProvider extends ChangeNotifier {
   List<Player> players = [];
 
   bool failed = false;
+
+  List<CashModel> transactions = [];
+  Future<void> loadTransactions() async {
+    if (auth.currentUser == null) {
+      return;
+    }
+    //debugPrint(auth.currentUser!.uid);
+    firestore
+        .collection("users")
+        .doc(auth.currentUser!.uid)
+        .collection("cashHistory")
+        .snapshots()
+        .listen((event) {
+      transactions.clear();
+      if (event.docs.isNotEmpty) {
+        //debugPrint(
+        //     "transactions *********************************** ${event.docs.length}");
+        for (var item in event.docs) {
+          // //debugPrint(item.id.toString());
+          final cash = CashModel.fromMap(item.data(), item.id);
+          transactions.add(cash);
+          // //debugPrint(cash.toString());
+          // //debugPrint(transactions.length.toString());
+        }
+      } else {
+        //debugPrint("No transactions ***********************************");
+      }
+      notifyListeners();
+    });
+  }
 
   DataProvider() {
     loadUser();
@@ -221,28 +253,33 @@ class DataProvider extends ChangeNotifier {
     // await firestore.collection('users').doc(auth.currentUser!.uid).delete();
     if (auth.currentUser != null) {
       debugPrint("Can load user");
-      final snap =
-          await firestore.collection('users').doc(auth.currentUser!.uid).get();
-      if (snap.exists) {
-        me = CurrentUser.fromMap(snap.data()!, snap.id);
+      firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .snapshots()
+          .listen((snap) async {
+        if (snap.exists) {
+          me = CurrentUser.fromMap(snap.data()!, snap.id);
 
-        if (me!.teamID > 0) {
-          debugPrint("teamID: ${me!.teamID}");
+          if (me!.teamID > 0) {
+            debugPrint("teamID: ${me!.teamID}");
 
-          await searchManager(me!.teamID);
-          if (foundTeam != null) {
-            me!.score = foundTeam!.score;
-            me!.rank = foundTeam!.rank;
-            me!.lastRank = foundTeam!.lastRank;
-            me!.total = foundTeam!.total;
+            await searchManager(me!.teamID);
+            if (foundTeam != null) {
+              me!.score = foundTeam!.score;
+              me!.rank = foundTeam!.rank;
+              me!.lastRank = foundTeam!.lastRank;
+              me!.total = foundTeam!.total;
+            }
           }
+          // toast(message: "I've been loaded");
+
+          notifyListeners();
+        } else {
+          await auth.signOut();
+          toast(message: "Not recognized, Please sign in again");
         }
-        // toast(message: "I've been loaded");
-        notifyListeners();
-      } else {
-        await auth.signOut();
-        toast(message: "Not recognized, Please sign in again");
-      }
+      });
     } else {
       toast(message: "Signup or Login to continue");
     }

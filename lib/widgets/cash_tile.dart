@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hospital/models/cash_model.dart';
 import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import '../models/Cash.dart';
@@ -10,7 +11,7 @@ import '../utils/globals.dart';
 class CashTile extends StatefulWidget {
   const CashTile(
       {super.key, this.fromSearch, required this.index, required this.cash});
-  final Cash cash;
+  final CashModel cash;
   final int index;
   final bool? fromSearch;
 

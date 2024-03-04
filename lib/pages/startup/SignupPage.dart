@@ -56,7 +56,7 @@ class _SignupPageState extends State<SignupPage> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: Globals.black,
+        backgroundColor: Globals.primaryBackground,
         body: ListView(
           scrollDirection: Axis.horizontal,
           children: [
@@ -422,7 +422,7 @@ class _SignupPageState extends State<SignupPage> {
                       margin: EdgeInsets.zero,
                       surfaceTintColor: const Color(0xFF003926),
                       elevation: 25.0,
-                      color: Globals.black,
+                      color: Globals.primaryBackground,
                       shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(160),

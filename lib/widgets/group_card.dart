@@ -89,7 +89,7 @@ class _GroupCardState extends State<GroupCard> {
                               Hero(
                                   tag: card.title,
                                   child: Card(
-                                    color: Globals.black,
+                                    color: Globals.primaryBackground,
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(card.title,
@@ -154,7 +154,7 @@ class _GroupCardState extends State<GroupCard> {
                   child: Card(
                       margin: EdgeInsets.zero,
                       elevation: 10,
-                      color: Globals.black,
+                      color: Globals.primaryBackground,
                       surfaceTintColor: Globals.blacker,
                       shadowColor: Colors.black,
                       child: SizedBox(
@@ -179,7 +179,7 @@ class _GroupCardState extends State<GroupCard> {
                                           padding: EdgeInsets.all(14.0),
                                           child: Icon(
                                             FontAwesomeIcons.checkDouble,
-                                            color: Globals.black,
+                                            color: Globals.primaryBackground,
                                           ),
                                         ),
                                       ),

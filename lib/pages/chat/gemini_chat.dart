@@ -120,7 +120,7 @@ class _GeminiScreenState extends State<GeminiScreen>
       child: Scaffold(
         appBar: AppBar(
           foregroundColor: const Color(0xffdddddd),
-          backgroundColor: Globals.black,
+          backgroundColor: Globals.primaryBackground,
           title: const Row(
             children: [
               Icon(
@@ -195,7 +195,7 @@ class _GeminiScreenState extends State<GeminiScreen>
             padding: const EdgeInsets.all(18),
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: Globals.black,
+              color: Globals.primaryBackground,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Wrap(
@@ -273,7 +273,7 @@ class _GeminiScreenState extends State<GeminiScreen>
 
   Widget _buildMessageInput() {
     return Container(
-      color: Globals.black,
+      color: Globals.primaryBackground,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       // color: const Color(0xff3E5622),
       child: Row(
@@ -304,7 +304,7 @@ class _GeminiScreenState extends State<GeminiScreen>
           else
             FloatingActionButton.small(
               shape: const CircleBorder(),
-              backgroundColor: Globals.black,
+              backgroundColor: Globals.primaryBackground,
               foregroundColor: Globals.primaryColor,
               onPressed: generate,
               child: const Icon(FontAwesomeIcons.solidPaperPlane,

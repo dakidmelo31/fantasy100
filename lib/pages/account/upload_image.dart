@@ -199,7 +199,7 @@ class _UploadImageState extends State<UploadImage> {
           },
           backgroundColor: Colors.white,
           tooltip: 'Delete',
-          child: Icon(Icons.delete, color: Globals.black),
+          child: Icon(Icons.delete, color: Globals.primaryBackground),
         ),
       ],
     );
@@ -263,7 +263,7 @@ class _UploadImageState extends State<UploadImage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24.0),
                 child: FloatingActionButton.extended(
-                  backgroundColor: Globals.black,
+                  backgroundColor: Globals.primaryBackground,
                   foregroundColor: Globals.white,
                   onPressed: () {
                     _uploadImage();
@@ -290,10 +290,10 @@ class _UploadImageState extends State<UploadImage> {
         uiSettings: [
           AndroidUiSettings(
               toolbarTitle: 'Crop Photo',
-              toolbarColor: Globals.black,
+              toolbarColor: Globals.primaryBackground,
               toolbarWidgetColor: Colors.white,
-              statusBarColor: Globals.black,
-              backgroundColor: Globals.black,
+              statusBarColor: Globals.primaryBackground,
+              backgroundColor: Globals.primaryBackground,
               initAspectRatio: CropAspectRatioPreset.original,
               activeControlsWidgetColor: Globals.primaryColor,
               lockAspectRatio: false),

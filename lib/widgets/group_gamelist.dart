@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hospital/providers/data_provider.dart';
+import 'package:hospital/widgets/game_card.dart';
 import 'package:provider/provider.dart';
 
 import 'group_card.dart';
@@ -20,8 +21,8 @@ class _GroupGamelistState extends State<GroupGamelist> {
       padding: const EdgeInsets.only(bottom: 140.0),
       child: Column(
         children: groups
-            .map((e) => GroupCard(
-                  card: e,
+            .map((e) => GameCard(
+                  game: e,
                 ))
             .toList(),
       ),

@@ -18,10 +18,10 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   Widget build(BuildContext context) {
     var size = getSize(context);
     return Scaffold(
-      backgroundColor: Globals.black,
+      backgroundColor: Globals.primaryBackground,
       appBar: AppBar(
         title: Text("Transaction History"),
-        backgroundColor: Globals.black,
+        backgroundColor: Globals.primaryBackground,
         elevation: 10,
         shadowColor: Colors.black.withOpacity(.1),
         foregroundColor: Globals.primaryColor,

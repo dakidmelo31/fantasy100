@@ -1,9 +1,7 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_count_down/date_count_down.dart';
-import 'package:faker/faker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,14 +9,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:hospital/models/player.dart';
 import 'package:hospital/pages/chat/gemini_chat.dart';
 import 'package:hospital/pages/confirm_team.dart';
 import 'package:hospital/pages/startup/SignupPage.dart';
 import 'package:hospital/pages/startup/wave_screen.dart';
 import 'package:hospital/pages/transactions/payment_history.dart';
 import 'package:hospital/pages/transactions/topup_page.dart';
+import 'package:hospital/pages/transactions/transaction_history.dart';
 import 'package:hospital/providers/data_provider.dart';
 import 'package:hospital/utils/globals.dart';
 import 'package:hospital/utils/transitions.dart';
@@ -26,12 +23,10 @@ import 'package:hospital/widgets/drag_notch.dart';
 import 'package:hospital/widgets/group_gamelist.dart';
 import 'package:hospital/widgets/honeypot.dart';
 import 'package:hospital/widgets/parking_tile.dart';
-import 'package:hospital/widgets/transaction_tile.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:uuid/uuid.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../widgets/scale_animation.dart';
@@ -83,7 +78,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     _repeatController.dispose();
     _animationController.dispose();
     _animation.isDismissed;
-    _controller.dispose();
+    if (_controller != null) _controller!.dispose();
     _repeatAnimation.isDismissed;
     super.dispose();
   }
@@ -121,7 +116,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           return Stack(
             children: [
               Scaffold(
-                  backgroundColor: Globals.black,
+                  backgroundColor: Globals.primaryBackground,
                   body: CustomScrollView(
                     physics: const BouncingScrollPhysics(
                         parent: AlwaysScrollableScrollPhysics()),
@@ -132,14 +127,16 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         stretch: false,
                         snap: false,
                         expandedHeight: 100,
-                        flexibleSpace: const FlexibleSpaceBar(
-                          // title: Text("Mr Melo FC"),
+                        flexibleSpace: FlexibleSpaceBar(
+                          title: data.me != null
+                              ? Text(prettyNumber(data.me!.balance) + "CFA")
+                              : const Text(Globals.appName),
                           stretchModes: [
                             StretchMode.blurBackground,
                           ],
                         ),
                         automaticallyImplyLeading: false,
-                        backgroundColor: Globals.black,
+                        backgroundColor: Globals.primaryBackground,
                         elevation: 0,
                         foregroundColor: Colors.black,
                         actions: [
@@ -219,7 +216,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                     if (false)
                                       FloatingActionButton(
                                         backgroundColor: Colors.white,
-                                        foregroundColor: Globals.black,
+                                        foregroundColor:
+                                            Globals.primaryBackground,
                                         shape: const CircleBorder(),
                                         onPressed: () {
                                           _launchUrl(data);
@@ -585,39 +583,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                               }),
                         ),
                       ])),
-                      if (false)
-                        SliverAppBar(
-                          pinned: true,
-                          floating: true,
-                          snap: true,
-                          backgroundColor: Globals.black,
-                          expandedHeight: size.height * .3,
-                          flexibleSpace: FlexibleSpaceBar(
-                            stretchModes: const [
-                              StretchMode.blurBackground,
-                              StretchMode.zoomBackground,
-                              StretchMode.fadeTitle,
-                            ],
-                            background: Stack(
-                              children: [
-                                CachedNetworkImage(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  imageUrl:
-                                      "https://z-p3-scontent.fdla2-1.fna.fbcdn.net/v/t39.30808-6/323635083_713393020285164_8359622157073999088_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=783fdb&_nc_eui2=AeGVYG5gVwCBN9oUMPIDHnidQj3CTlGg1mBCPcJOUaDWYLgz0c6EYfGW2hTd8gOAjuHEZzCi22upIf9TwS0e7hag&_nc_ohc=U6TXRaDeuGIAX-Kxp0f&_nc_zt=23&_nc_ht=z-p3-scontent.fdla2-1.fna&oh=00_AfB8svYuVvbMdzaibj11ygudjy11FaHhrcK9MnxjNg0kJQ&oe=65D5EE22",
-                                  placeholder: (context, url) => placeholder,
-                                  errorWidget: (context, url, error) =>
-                                      errorWidget2,
-                                  fit: BoxFit.cover,
-                                ),
-                                Container(
-                                  color: Globals.black.withOpacity(.1),
-                                )
-                              ],
-                            ),
-                            title: const Text("Back your Team"),
-                          ),
-                        ),
                       SliverList(
                           delegate:
                               SliverChildListDelegate([const GroupGamelist()]))
@@ -643,7 +608,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         shadowColor: Globals.primaryColor.withOpacity(.7),
                         elevation: 20,
                         shape: Globals.radius(36),
-                        color: Globals.black.withOpacity(.42),
+                        color: Globals.primaryBackground.withOpacity(.42),
                         child: SizedBox(
                           width: size.width,
                           height: size.height * .95,
@@ -684,7 +649,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                             child: MaterialButton(
                                                 height: 50,
                                                 shape: Globals.radius(18),
-                                                color: Globals.black,
+                                                color:
+                                                    Globals.primaryBackground,
                                                 elevation: 0,
                                                 textColor: Colors.white,
                                                 onPressed: () {
@@ -747,7 +713,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                               AnimatedContainer(
                                                   duration:
                                                       Globals.mainDuration,
-                                                  color: Globals.black,
+                                                  color:
+                                                      Globals.primaryBackground,
                                                   curve: Curves
                                                       .fastEaseInToSlowEaseOut,
                                                   width: size.width,
@@ -872,10 +839,11 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                 HapticFeedback.heavyImpact();
                                 Future.delayed(const Duration(milliseconds: 60),
                                     () {
+                                  data.loadTransactions();
                                   Navigator.push(
                                       context,
                                       LeftTransition(
-                                          child: const PaymentHistory()));
+                                          child: TransactionHistory()));
                                 });
                               },
                               title: const Text(
@@ -967,7 +935,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                             heroTag: "phoneAuth",
                                             backgroundColor:
                                                 Globals.primaryColor,
-                                            foregroundColor: Globals.black,
+                                            foregroundColor:
+                                                Globals.primaryBackground,
                                             onPressed: () {
                                               Navigator.push(
                                                   context,
@@ -992,7 +961,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                           children: [
                                             FloatingActionButton(
                                               heroTag: "Google",
-                                              backgroundColor: Globals.black,
+                                              backgroundColor:
+                                                  Globals.primaryBackground,
                                               foregroundColor:
                                                   Globals.primaryColor,
                                               onPressed: () async {
@@ -1101,9 +1071,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                         onReady: () {
                                           // _controller.addListener();
                                           // _controller.toggleFullScreenMode();
-                                          _controller.play();
+                                          _controller!.play();
                                         },
-                                        controller: _controller,
+                                        controller: _controller!,
                                         showVideoProgressIndicator: true,
                                       ),
                                       const Column(
@@ -1177,22 +1147,24 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     );
   }
 
-  final YoutubePlayerController _controller = YoutubePlayerController(
-    initialVideoId: '5vXiVHdyxuY',
-    flags: const YoutubePlayerFlags(
-      forceHD: true,
-      loop: false,
-      autoPlay: false,
-      mute: true,
-    ),
-  );
+  final YoutubePlayerController? _controller = Globals.verified
+      ? null
+      : YoutubePlayerController(
+          initialVideoId: '5vXiVHdyxuY',
+          flags: const YoutubePlayerFlags(
+            forceHD: true,
+            loop: false,
+            autoPlay: false,
+            mute: true,
+          ),
+        );
 
   final Uri _url = Uri.parse('https://users.premierleague.com/');
 
   final TextEditingController _userIDController = TextEditingController();
 
   Future<void> _launchUrl(DataProvider data) async {
-    _controller.pause();
+    _controller!.pause();
     await launchUrl(_url).then((value) {
       if (value) {
         showCupertinoDialog(
@@ -1209,13 +1181,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                       elevation: 0,
                       color: Colors.transparent,
                       surfaceTintColor: Colors.transparent,
-                      shadowColor: Globals.black.withOpacity(.2),
+                      shadowColor: Globals.primaryBackground.withOpacity(.2),
                       margin: EdgeInsets.zero,
                       child: TextField(
                         controller: _userIDController,
                         cursorColor: Colors.white,
                         style: GoogleFonts.jost(
-                          color: Globals.black,
+                          color: Globals.primaryBackground,
                         ),
                         decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
@@ -1230,7 +1202,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                             suffix: FloatingActionButton.small(
                               heroTag: "dfklajdkl",
                               shape: const CircleBorder(),
-                              backgroundColor: Globals.black,
+                              backgroundColor: Globals.primaryBackground,
                               onPressed: () async {
                                 int res = int.tryParse(
                                         _userIDController.text.trim()) ??
