@@ -1,4 +1,8 @@
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hospital/pages/dashboard.dart';
+import 'package:hospital/pages/transactions/WithdrawalPage.dart';
+import 'package:hospital/pages/transactions/topup_page.dart';
 import 'package:hospital/providers/data_provider.dart';
 import 'package:hospital/utils/transitions.dart';
 import 'package:timeago/timeago.dart' as timeAgo;
@@ -72,8 +76,8 @@ class _TransactionHistoryState extends State<TransactionHistory>
                 backgroundColor: Globals.backgroundColor,
                 elevation: 15,
                 shadowColor: Globals.primaryBackground.withOpacity(.4),
-                flexibleSpace: FlexibleSpaceBar(
-                  stretchModes: const [
+                flexibleSpace: const FlexibleSpaceBar(
+                  stretchModes: [
                     StretchMode.fadeTitle,
                     StretchMode.zoomBackground,
                     StretchMode.blurBackground
@@ -84,6 +88,59 @@ class _TransactionHistoryState extends State<TransactionHistory>
                     style: Globals.title,
                   ),
                 ),
+                scrolledUnderElevation: 0,
+                actions: [
+                  Card(
+                    shape: const CircleBorder(),
+                    elevation: 7,
+                    color: Colors.white,
+                    surfaceTintColor: Colors.transparent,
+                    shadowColor: Colors.black.withOpacity(.25),
+                    child: SizedBox(
+                      width: 45,
+                      height: 45,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () {
+                          HapticFeedback.heavyImpact();
+                          Navigator.push(context,
+                              LeftTransition(child: const WithdrawalPage()));
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(
+                              child: Icon(FontAwesomeIcons.arrowCircleUp,
+                                  color: Globals.primaryColor2, size: 20)),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Card(
+                    shape: const CircleBorder(),
+                    shadowColor: Colors.black.withOpacity(.25),
+                    elevation: 7,
+                    color: Colors.white,
+                    surfaceTintColor: Colors.transparent,
+                    child: SizedBox(
+                      width: 45,
+                      height: 45,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () {
+                          HapticFeedback.heavyImpact();
+                          Navigator.push(
+                              context, LeftTransition(child: const TopUp()));
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(
+                              child: Icon(FontAwesomeIcons.arrowCircleDown,
+                                  color: Color(0xff00aa00), size: 20)),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
                 floating: true,
                 pinned: true,
               ),

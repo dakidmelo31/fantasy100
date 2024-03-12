@@ -58,7 +58,29 @@ launchWhatsApp({required String phoneNumber, required String message}) async {
   await launch("$link");
 }
 
+const _heightSocial = 150.0;
+const _heightLastConsume = 100.0;
+
 class Globals {
+  static DateTime finale = DateTime.now();
+
+  static String formatTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = DateTime(now.year, now.month, now.day - 1);
+
+    if (dateTime.isAfter(today)) {
+      return DateFormat.jm()
+          .format(dateTime); // Display time only for today's messages
+    } else if (dateTime.isAfter(yesterday)) {
+      return 'Yesterday';
+    } else {
+      return DateFormat('dd/MM/yyyy')
+          .format(dateTime); // Display full date for older messages
+    }
+  }
+
+  static const accentColor = Color(0xff363636);
   static Future<void> makeDeposit({required int amount}) async {
     HapticFeedback.heavyImpact();
 
@@ -173,8 +195,6 @@ class Globals {
 
   static const white = Colors.white;
 
-  static const accentColor = Color(0xFFEEAA00);
-
   static const whiteText =
       TextStyle(color: Colors.white, fontFamily: "Lato", fontSize: 16);
   static const lightText =
@@ -186,7 +206,9 @@ class Globals {
       fontFamily: "Lato",
       fontWeight: FontWeight.w300);
   static const subtitle = TextStyle(
-      color: Colors.black, fontFamily: "Lato", fontWeight: FontWeight.w300);
+      color: Color(0xff999999),
+      fontFamily: "Lato",
+      fontWeight: FontWeight.w300);
   static const greySubtitle = TextStyle(
       color: Color(0xffaaaaaa),
       fontFamily: "Lato",

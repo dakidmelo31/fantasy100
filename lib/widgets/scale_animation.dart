@@ -26,10 +26,10 @@ class _ScaleAnimState extends State<ScaleAnim> {
             margin: EdgeInsets.all(animatorState.value),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Globals.lightBlack,
+              color: Globals.primaryColor,
               boxShadow: [
                 BoxShadow(
-                  color: Globals.white.withOpacity(0.25),
+                  color: Globals.primaryColor.withOpacity(0.25),
                   offset: const Offset(0, 5),
                   blurRadius: 30,
                 ),

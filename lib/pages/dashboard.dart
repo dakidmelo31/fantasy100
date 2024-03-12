@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_count_down/date_count_down.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,7 +43,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
-  late final AnimationController _animationController, _repeatController;
+  late final AnimationController _animation2Controller, _repeatController;
 
   late final Animation<double> _animation;
   late Animation _repeatAnimation;
@@ -56,12 +57,12 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   void initState() {
     _mainDuration = DateTime.now().add(const Duration(days: 16));
     // scoreTiles.sort((a, b) => a.,)
-    _animationController = AnimationController(
+    _animation2Controller = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 800));
     _repeatController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 700));
     _animation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastLinearToSlowEaseIn);
+        parent: _animation2Controller, curve: Curves.fastLinearToSlowEaseIn);
 
     _repeatController.repeat(reverse: true);
     _repeatAnimation = Tween(begin: 10.0, end: 20.0).animate(_repeatController)
@@ -69,14 +70,14 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         setState(() {});
       });
 
-    _animationController.forward();
+    _animation2Controller.forward();
     super.initState();
   }
 
   @override
   void dispose() {
     _repeatController.dispose();
-    _animationController.dispose();
+    _animation2Controller.dispose();
     _animation.isDismissed;
     if (_controller != null) _controller!.dispose();
     _repeatAnimation.isDismissed;
@@ -107,12 +108,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       child: StreamBuilder<User?>(
         stream: auth.authStateChanges(),
         builder: (context, AsyncSnapshot<User?> snapshot) {
-          bool _alreadySignedUp = false;
-          if (snapshot.hasData) {
-            _alreadySignedUp = true;
-            // debugPrint("Data: $data");
-          }
-
           return Stack(
             children: [
               Scaffold(
@@ -129,9 +124,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         expandedHeight: 100,
                         flexibleSpace: FlexibleSpaceBar(
                           title: data.me != null
-                              ? Text(prettyNumber(data.me!.balance) + "CFA")
+                              ? Text("${prettyNumber(data.me!.balance)}CFA")
                               : const Text(Globals.appName),
-                          stretchModes: [
+                          stretchModes: const [
                             StretchMode.blurBackground,
                           ],
                         ),
@@ -142,20 +137,18 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                         actions: [
                           IconButton(
                               onPressed: () async {
-// Create a chat object
-                                Chat chat = Chat(
-                                  name: 'John Doe',
-                                  profilePic: 'https://i.pravatar.cc/150',
-                                  messages: [],
-                                );
-
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => GeminiScreen(chat)));
+                                final prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.setInt(
+                                    "finale",
+                                    DateTime.now()
+                                        .add(const Duration(days: 94))
+                                        .millisecondsSinceEpoch);
                               },
-                              color: Globals.primaryColor,
-                              icon: const Icon(FontAwesomeIcons.robot)),
+                              icon: const Icon(
+                                FontAwesomeIcons.upload,
+                                color: Colors.white,
+                              )),
                           IconButton(
                               onPressed: () {
                                 debugPrint("Show Notification");
@@ -309,7 +302,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                               animation: _repeatAnimation,
                               builder: (context, child) {
                                 return AnimatedBuilder(
-                                    animation: _animationController,
+                                    animation: _animation2Controller,
                                     builder: (_, __) {
                                       return Stack(
                                         children: [
@@ -360,7 +353,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                                             context,
                                                             LeftTransition(
                                                                 child:
-                                                                    const PaymentHistory()));
+                                                                    TransactionHistory()));
                                                       },
                                                       child: SizedBox(
                                                         width: size.width * .8,
@@ -369,7 +362,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                                               EdgeInsets.only(
                                                                   top: 18.0),
                                                           child: Text(
-                                                            "Tap to view leaderboard.",
+                                                            "Tap to view transaction history.",
                                                             textAlign: TextAlign
                                                                 .center,
                                                             style: TextStyle(

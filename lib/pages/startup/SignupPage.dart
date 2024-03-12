@@ -178,7 +178,7 @@ class _SignupPageState extends State<SignupPage> {
                                   const EdgeInsets.symmetric(horizontal: 20.0),
                               elevation: 15.0,
                               shadowColor: Colors.black.withOpacity(.15),
-                              surfaceTintColor: Globals.primaryColor,
+                              surfaceTintColor: Globals.accentColor,
                               color: Colors.white,
                               child: Center(
                                 child: AnimatedSwitcher(

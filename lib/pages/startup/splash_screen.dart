@@ -22,7 +22,7 @@ class SplashScreen extends StatefulWidget {
   NotificationAppLaunchDetails? notificationAppLaunchDetails;
   bool get didNotificationLaunchApp =>
       notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
-  static const routeName = "/";
+  static const routeName = "/splash";
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

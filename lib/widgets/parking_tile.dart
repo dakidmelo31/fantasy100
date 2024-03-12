@@ -30,9 +30,9 @@ class _PlayerTileState extends State<PlayerTile> {
     return Hero(
       tag: "${widget.index}",
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 1),
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 1),
         child: MaterialButton(
-          padding: const EdgeInsets.only(left: 1.5, bottom: 10, top: 10),
+          padding: const EdgeInsets.only(left: 1.5, bottom: 5, top: 5),
           enableFeedback: true,
           onPressed: () {
             // if (false)
@@ -40,14 +40,14 @@ class _PlayerTileState extends State<PlayerTile> {
                 LeftTransition(child: ManagerOverlay(index: widget.index)));
           },
           shape: Globals.radius(20),
-          color: Globals.lightBlack.withOpacity(.5),
+          color: Globals.white,
           elevation: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               MaterialButton(
                 shape: const CircleBorder(),
-                color: Globals.primaryBackground,
+                color: Colors.grey.withOpacity(.25),
                 onPressed: () {
                   HapticFeedback.heavyImpact();
                 },
@@ -56,14 +56,14 @@ class _PlayerTileState extends State<PlayerTile> {
                   children: [
                     Center(
                       child: SizedBox(
-                        width: 55,
-                        height: 55,
+                        width: 45,
+                        height: 45,
                         child: Center(
                           child: ClipOval(
                             child: CachedNetworkImage(
                               imageUrl: manager.image,
-                              width: 50,
-                              height: 50,
+                              width: 40,
+                              height: 40,
                               alignment: Alignment.center,
                               fit: BoxFit.cover,
                               errorWidget: (context, url, error) =>
@@ -90,7 +90,7 @@ class _PlayerTileState extends State<PlayerTile> {
                               child: Text(
                                 (widget.index + 1).toString(),
                                 style: const TextStyle(
-                                    color: Globals.primaryColor,
+                                    color: Colors.white,
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600),
                               ),
@@ -108,25 +108,25 @@ class _PlayerTileState extends State<PlayerTile> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(left: 8.0),
                       child: Text(
                         manager.teamName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Globals.greyTitle,
+                        style: Globals.title,
                       ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(left: 0.0, right: 4),
+                          padding: const EdgeInsets.only(left: 0.0, right: 4),
                           child: SizedBox(
                             width: size.width * .4,
                             child: Text(
                               manager.username,
-                              style: TextStyle(
-                                  color: Color(0xffaaaaaa),
+                              style: const TextStyle(
+                                  color: Color(0xff777777),
                                   fontWeight: FontWeight.w400),
                             ),
                           ),
@@ -141,7 +141,8 @@ class _PlayerTileState extends State<PlayerTile> {
                 shape: Globals.radius(20),
                 elevation: 20,
                 shadowColor: Colors.black.withOpacity(.09),
-                color: Globals.lightBlack,
+                color: Globals.white,
+                surfaceTintColor: Colors.white,
                 child: SizedBox(
                   width: 65,
                   height: 55,
@@ -153,8 +154,7 @@ class _PlayerTileState extends State<PlayerTile> {
                         prettyNumber(manager.total),
                         style: const TextStyle(
                             fontWeight: FontWeight.w700,
-                            fontSize: 19,
-                            color: Globals.primaryColor,
+                            color: Colors.black,
                             fontFamily: "Lato"),
                       ),
                       Text(
@@ -162,7 +162,7 @@ class _PlayerTileState extends State<PlayerTile> {
                         style: TextStyle(
                             fontWeight: FontWeight.w300,
                             fontSize: 10,
-                            color: Globals.white.withOpacity(.66),
+                            color: Globals.primaryColor.withOpacity(.66),
                             fontFamily: "Lato"),
                       ),
                     ],

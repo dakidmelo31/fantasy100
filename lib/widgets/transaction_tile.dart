@@ -82,7 +82,7 @@ class _TransactionTileState extends State<TransactionTile> {
                           ),
                         ),
                         SizedBox(
-                          width: size.width * .59,
+                          width: size.width * .5,
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 left: 18.0, top: 6.0, bottom: 2.0),

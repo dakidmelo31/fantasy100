@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -6,12 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:hospital/models/cash.dart';
 import 'package:hospital/models/manager.dart';
 import 'package:hospital/models/player.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 import '../models/cash_model.dart';
 import '../models/current_user.dart';
 import '../models/group.dart';
 import '../models/overview.dart';
+import '../models/week_data.dart';
 import '../utils/globals.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -25,6 +28,17 @@ class DataProvider extends ChangeNotifier {
   bool failed = false;
 
   List<CashModel> transactions = [];
+
+  List<WeekData> weeklyCompetition = List<WeekData>.generate(
+      6,
+      (index) => WeekData(
+          weekID: 'weekID',
+          maxPlayers: Random().nextInt(6000),
+          isOpen: Random().nextBool(),
+          entryFee: 200,
+          completed: false,
+          registeredPlayers: Random().nextInt(5000),
+          endsAt: DateTime.now().add(const Duration(days: 2, hours: 6))));
   Future<void> loadTransactions() async {
     if (auth.currentUser == null) {
       return;
@@ -37,6 +51,7 @@ class DataProvider extends ChangeNotifier {
         .snapshots()
         .listen((event) {
       transactions.clear();
+      debugPrint("Loading CashHistory*******************");
       if (event.docs.isNotEmpty) {
         //debugPrint(
         //     "transactions *********************************** ${event.docs.length}");
@@ -59,6 +74,37 @@ class DataProvider extends ChangeNotifier {
     loadOverviews();
     loadGroups();
     loadFantasyGroup();
+    loadTransactions();
+    check();
+  }
+  Future<void> check() async {
+    // await firestore.collection("system").doc("information").set({
+    //   "finale": DateTime.now().add(Duration(days: 120)).millisecondsSinceEpoch
+    // }).then((value) => toast(message: "Updating system"));
+    if (Globals.finale.isBefore(DateTime.now())) {
+      firestore
+          .collection("system")
+          .doc("information")
+          .get()
+          .then((value) async {
+        final prefs = await SharedPreferences.getInstance();
+        if (value.exists) {
+          prefs.setInt("finale", value.data()!['finale']);
+          Globals.finale =
+              DateTime.fromMillisecondsSinceEpoch(value.data()!['finale']);
+
+          debugPrint("Just updating now");
+          notifyListeners();
+        }
+        // else {
+        //   firestore.collection("system").doc("information").set({
+        //     "finale": DateTime.now()
+        //         .add(const Duration(days: 96))
+        //         .millisecondsSinceEpoch
+        //   });
+        // }
+      });
+    }
   }
 
   Future<void> loadChats(String overviewID) async {

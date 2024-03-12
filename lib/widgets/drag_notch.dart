@@ -48,7 +48,9 @@ class _DragNotchState extends State<DragNotch> {
       switchBack: () {
         HapticFeedback.heavyImpact();
         setState(() {
-          text = top == null ? data.currentGameWeek : top!.teamName;
+          text = top == null
+              ? data.currentGameWeek
+              : "#${prettyNumber(top.rank)} ${top.teamName}";
           switchText = !switchText;
         });
       },
@@ -62,7 +64,12 @@ class _DragNotchState extends State<DragNotch> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(text, style: const TextStyle(color: Colors.white)),
+            SizedBox(
+                width: size.width * .55,
+                child: Text(text,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white))),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

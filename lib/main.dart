@@ -12,6 +12,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hospital/pages/chat/chat_overview.dart';
 import 'package:hospital/pages/dashboard.dart';
 import 'package:hospital/pages/empty_page.dart';
+import 'package:hospital/pages/home_dashboard.dart';
 import 'package:hospital/pages/qr_page.dart';
 import 'package:hospital/pages/startup/auth_page.dart';
 import 'package:hospital/pages/startup/splash_screen.dart';
@@ -139,6 +140,9 @@ void main() async {
   await _configureLocalTimeZone();
   final prefs = await SharedPreferences.getInstance();
 
+  Globals.finale =
+      DateTime.fromMillisecondsSinceEpoch(await prefs.getInt("finale") ?? 0);
+
   googleToken = prefs.getString("userToken") ?? '';
   userID = prefs.getInt("userID") ?? 0;
   Globals.verified = prefs.getBool("verified") ?? false;
@@ -261,12 +265,13 @@ class AppDomain extends StatelessWidget {
       create: (context) => DataProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: initialRoute,
+        // initialRoute: initialRoute,
         theme: OMITheme.lightTheme(),
         navigatorKey: navigatorKey,
         darkTheme: OMITheme.darkTheme(),
         routes: {
           Dashboard.routeName: (_) => const Dashboard(),
+          HomeBoard.routeName: (_) => const HomeBoard(),
           SplashScreen.routeName: (_) => SplashScreen(null),
           AuthPage.routeName: (_) => const AuthPage(),
           Startup.routeName: (_) => const Startup(),

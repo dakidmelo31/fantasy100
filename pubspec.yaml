@@ -88,6 +88,7 @@ dependencies:
   url_launcher: ^6.2.4
   youtube_player_flutter: ^8.1.2
   whatsapp_unilink: ^2.1.0
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:

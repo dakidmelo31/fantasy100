@@ -490,11 +490,11 @@ class SizeTransition55 extends PageRouteBuilder {
                 parent: animation,
                 reverseCurve: Curves.fastOutSlowIn);
             return Align(
-              alignment: Alignment.centerRight,
+              alignment: Alignment.center,
               child: SizeTransition(
-                axis: Axis.horizontal,
+                axis: Axis.vertical,
                 sizeFactor: animation,
-                axisAlignment: 0,
+                axisAlignment: 100,
                 child: page,
               ),
             );

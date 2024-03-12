@@ -160,7 +160,7 @@ class _TopUpState extends State<TopUp> with SingleTickerProviderStateMixin {
                   const Text("Top Up", style: Globals.heading),
                   const SizedBox(height: kToolbarHeight * .7),
                   TextField(
-                    autofocus: true,
+                    autofocus: !true,
                     onChanged: (value) {
                       if (value.isNotEmpty &&
                           int.tryParse(_textController.text.trim()) != null) {

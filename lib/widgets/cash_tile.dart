@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hospital/models/cash_model.dart';
 import 'package:intl/intl.dart';
@@ -123,20 +124,26 @@ class _CashTileState extends State<CashTile> with TickerProviderStateMixin {
                                       : Globals.primaryColor,
                               child: const SizedBox(height: 10.0, width: 10.0),
                             ),
-                            Icon(
-                              !cash.deposit
-                                  ? Icons.trending_down_rounded
-                                  : Icons.trending_up_rounded,
-                              size: 30,
-                              color: !cash.deposit ? Colors.pink : Colors.blue,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Icon(
+                                !cash.deposit
+                                    ? FontAwesomeIcons.circleUp
+                                    : FontAwesomeIcons.circleDown,
+                                size: 16,
+                                color: !cash.deposit
+                                    ? Colors.pink
+                                    : const Color(0xff00aa00),
+                              ),
                             )
                           ],
                         ),
                         Align(
                           alignment: Alignment.bottomRight,
                           child: Text(
-                            'Jiffy(cash.createdAt).yMMMEd',
-                            style: TextStyle(fontSize: 12, color: Colors.black),
+                            Globals.formatTime(cash.createdAt),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black),
                           ),
                         )
                       ],
