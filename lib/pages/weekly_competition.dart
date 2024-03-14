@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,12 +22,8 @@ class WeeklyCompetition extends StatefulWidget {
 }
 
 class _WeeklyCompetitionState extends State<WeeklyCompetition> {
-  late final CarouselController _carouselController;
-
-  int _index = 0;
   @override
   void initState() {
-    _carouselController = CarouselController();
     super.initState();
   }
 
@@ -36,7 +33,7 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
     final data = Provider.of<DataProvider>(context, listen: true);
     final weeklyCompetition = data.weeklyCompetition;
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(statusBarBrightness: Brightness.light),
+      value: const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
       child: Scaffold(
         body: Stack(
           children: [
@@ -45,7 +42,7 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
                 fit: BoxFit.cover, width: size.width, height: size.height),
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-              child: Container(
+              child: SizedBox(
                 width: size.width,
                 height: size.height,
               ),
@@ -64,7 +61,37 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
               child: CustomScrollView(
                 slivers: [
                   SliverAppBar(
-                    expandedHeight: size.height * .5,
+                    onStretchTrigger: () async {
+                      Future.delayed(Duration.zero, () async {
+                        await data.refreshGameweek();
+                        Globals.vibrate();
+
+                        toast(message: "Gameweek Data Updated");
+                        setState(() {});
+                      });
+                      HapticFeedback.heavyImpact();
+                    },
+                    stretchTriggerOffset: 150,
+                    pinned: true,
+                    floating: true,
+                    snap: false,
+                    title: Card(
+                        surfaceTintColor: Colors.transparent,
+                        color: Colors.black.withOpacity(.0),
+                        elevation: 0,
+                        shape: Globals.radius(36),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Center(
+                                child: Text(
+                              "GameWeek 32",
+                              style: Globals.heading,
+                            )),
+                          ),
+                        )),
+                    expandedHeight: size.height * .55,
                     backgroundColor: Colors.transparent,
                     surfaceTintColor: Colors.transparent,
                     shadowColor: Colors.transparent,
@@ -72,12 +99,28 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
                     flexibleSpace: FlexibleSpaceBar(
                       background: Column(
                         children: [
+                          const Spacer(),
+                          const Spacer(),
                           Padding(
                             padding: const EdgeInsets.only(top: kToolbarHeight),
-                            child: Text(
-                              "15,300 CFA",
-                              style: GoogleFonts.cabin(
-                                  fontSize: 35, fontWeight: FontWeight.w400),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "95",
+                                  style: GoogleFonts.cabin(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                Text(
+                                  " Pts",
+                                  style: GoogleFonts.openSans(
+                                      fontSize: 22,
+                                      color: Colors.black.withOpacity(.25),
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
                             ),
                           ),
                           Padding(
@@ -92,8 +135,10 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
                                     heroTag: "add_more",
                                     onPressed: () {
                                       HapticFeedback.heavyImpact();
-                                      Navigator.push(context,
-                                          SizeTransition22(const TopUp()));
+                                      Navigator.push(
+                                          context,
+                                          SizeTransition22(
+                                              const WeeklyCompetition()));
                                     },
                                     backgroundColor: Colors.black,
                                     shape: const CircleBorder(),
@@ -156,65 +201,129 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
                             ),
                           ),
                           const Spacer(),
-                          CarouselSlider(
-                            carouselController: _carouselController,
-                            options: CarouselOptions(
-                              height: 250,
-                              enlargeCenterPage: true,
-                              enableInfiniteScroll: true,
-                              enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                              pageSnapping: true,
-                              scrollPhysics: const BouncingScrollPhysics(
-                                  parent: AlwaysScrollableScrollPhysics()),
-                              enlargeFactor: 1.9,
-                              scrollDirection: Axis.horizontal,
-                              onPageChanged: (index, reason) {
-                                setState(() {
-                                  _index = index;
-                                });
-                              },
-                              autoPlay: true,
-                            ),
-                            items: weeklyCompetition
-                                .map((e) => WeeklyWidget(weekly: e))
-                                .toList(),
-                          ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 18.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                for (int i = 0;
-                                    i < weeklyCompetition.length;
-                                    i++)
-                                  Row(
-                                    children: [
-                                      if (i != 0)
-                                        const SizedBox(
-                                          width: 8,
-                                        ),
-                                      Container(
-                                        width: 10,
-                                        height: 10,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              width: .5, color: Colors.black),
-                                          color: _index == i
-                                              ? Colors.black
-                                              : Colors.transparent,
-                                        ),
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text(
+                              "Weekly Competition",
+                              style: GoogleFonts.righteous(
+                                  fontSize: 60, fontWeight: FontWeight.w400),
+                            ),
+                          ),
+                          SizedBox(
+                            width: size.width,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: size.width * .75,
+                                    child: const Text(
+                                        "You are free to join any group. The rule is simple: Winner takes all"),
+                                  ),
+                                  InkWell(
+                                    customBorder: const CircleBorder(),
+                                    onTap: () {
+                                      showCupertinoDialog(
+                                          context: context,
+                                          builder: (_) {
+                                            return CupertinoAlertDialog(
+                                              title:
+                                                  const Text("Fair Play Rules"),
+                                              content: const Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SelectableText(
+                                                    "The The main purpose of the multiple game rooms feature is to give every manager a shot at winning during a gameweek. This means you are free to take part in one or all, but you may not win in more than one.\n",
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  SelectableText(
+                                                    "In an event you score the highest point across multiple groups, we will credit you with the highest amount won, and the winnings of the other rooms you are topping will trickle down to the next best manager.\nHowever we will also give you a winning bonus and a manager gift for acknowledgement of your managerial briliance",
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  SelectableText(
+                                                    "\nNote that in this event the subsequent winner in the room forfeited will be the closest manager without a win for the gameweek in question.",
+                                                    textAlign: TextAlign.left,
+                                                  )
+                                                ],
+                                              ),
+                                              actions: [
+                                                CupertinoDialogAction(
+                                                  isDefaultAction: true,
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text(
+                                                    "Okay",
+                                                    style: Globals.title,
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    },
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: Colors.black, width: 1),
+                                        shape: BoxShape.circle,
+                                        color: Colors.transparent,
                                       ),
-                                    ],
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(12.0),
+                                        child: Icon(FontAwesomeIcons.info),
+                                      ),
+                                    ),
                                   )
-                              ],
+                                ],
+                              ),
                             ),
                           )
                         ],
                       ),
+                      collapseMode: CollapseMode.parallax,
+                      stretchModes: const [
+                        StretchMode.blurBackground,
+                        StretchMode.fadeTitle,
+                        StretchMode.zoomBackground
+                      ],
                     ),
+                    automaticallyImplyLeading: false,
+                    foregroundColor: Colors.black,
+                    forceElevated: false,
+                    scrolledUnderElevation: 0,
+                    stretch: true,
+                    forceMaterialTransparency: true,
+                    systemOverlayStyle: const SystemUiOverlayStyle(
+                        statusBarIconBrightness: Brightness.dark),
                   ),
+                  SliverList(
+                      delegate: SliverChildListDelegate([
+                    const SizedBox(height: 20),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        "Other Sweet Game Plans",
+                        style: Globals.heading,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Text(
+                          "No Room available at the moment, refresh or come back later to check"),
+                    ),
+                    ListView.builder(
+                      itemCount: data.weeklyCompetition.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (context, index) => WeeklyWidget(
+                          weekID: data.weeklyCompetition[index].weekID),
+                    )
+                  ]))
                 ],
+                physics: const BouncingScrollPhysics(),
               ),
             )
           ],

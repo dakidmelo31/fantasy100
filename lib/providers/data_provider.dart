@@ -1,15 +1,12 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hospital/models/cash.dart';
 import 'package:hospital/models/manager.dart';
 import 'package:hospital/models/player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
 import '../models/cash_model.dart';
 import '../models/current_user.dart';
 import '../models/group.dart';
@@ -29,16 +26,28 @@ class DataProvider extends ChangeNotifier {
 
   List<CashModel> transactions = [];
 
-  List<WeekData> weeklyCompetition = List<WeekData>.generate(
-      6,
-      (index) => WeekData(
+  List<WeekData> weeklyCompetition = [];
+
+  Future<void> refreshGameweek() async {
+    weeklyCompetition.clear();
+    for (var i = 0; i < 8; i++) {
+      weeklyCompetition.add(WeekData(
           weekID: 'weekID',
           maxPlayers: Random().nextInt(6000),
           isOpen: Random().nextBool(),
-          entryFee: 200,
+          entryFee: [200, 500, 100, 50, 250, 600][Random().nextInt(5)],
+          participantsID: [],
           completed: false,
           registeredPlayers: Random().nextInt(5000),
-          endsAt: DateTime.now().add(const Duration(days: 2, hours: 6))));
+          endsAt: DateTime.now().add(Duration(days: 2 * i, hours: 6))));
+    }
+    toast(message: "done loading");
+    for (var e in weeklyCompetition) {
+      debugPrint(e.registeredPlayers.toString());
+    }
+    notifyListeners();
+  }
+
   Future<void> loadTransactions() async {
     if (auth.currentUser == null) {
       return;
@@ -76,6 +85,7 @@ class DataProvider extends ChangeNotifier {
     loadFantasyGroup();
     loadTransactions();
     check();
+    refreshGameweek();
   }
   Future<void> check() async {
     // await firestore.collection("system").doc("information").set({
@@ -352,4 +362,10 @@ class DataProvider extends ChangeNotifier {
   }
 
   CurrentUser? me;
+
+  WeekData? getWeek(String weekID) {
+    List<WeekData?> data = [...weeklyCompetition];
+    return data.firstWhere((element) => element!.weekID == weekID,
+        orElse: () => null);
+  }
 }

@@ -122,9 +122,15 @@ class _HomeBoardState extends State<HomeBoard> with TickerProviderStateMixin {
       child: Stack(
         children: [
           PopScope(
-            canPop: !_opened && !_showSignup,
+            canPop: page != 0 && !_opened && !_showSignup,
             onPopInvoked: (pop) async {
               debugPrint("$_showSignup || $opened");
+              if (page == 0) {
+                debugPrint("Back to list");
+                _pageController.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.fastEaseInToSlowEaseOut);
+              }
               if (_showSignup || _opened) {
                 setState(() {
                   opened = false;
@@ -190,11 +196,6 @@ class _HomeBoardState extends State<HomeBoard> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                                AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 500),
-                                    child: page < .3
-                                        ? const WeeklyCompetition()
-                                        : null),
                                 Positioned(
                                   top: value,
                                   bottom: page == 0 ? 0 : size.height * .2,
@@ -207,7 +208,11 @@ class _HomeBoardState extends State<HomeBoard> with TickerProviderStateMixin {
                                             AlwaysScrollableScrollPhysics()),
                                     children: groups
                                         .map(((e) => e == null
-                                            ? const SizedBox.shrink()
+                                            ? const Row(
+                                                children: [
+                                                  Text(""),
+                                                ],
+                                              )
                                             : GestureDetector(
                                                 onVerticalDragUpdate:
                                                     (details) {
@@ -262,6 +267,11 @@ class _HomeBoardState extends State<HomeBoard> with TickerProviderStateMixin {
                                         .toList(),
                                   ),
                                 ),
+                                AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 500),
+                                    child: page < .3
+                                        ? const WeeklyCompetition()
+                                        : null),
                                 Positioned(
                                   top: 0,
                                   child: AnimatedSwitcher(

@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+
 class WeekData {
   final String weekID;
   final int maxPlayers;
@@ -10,6 +12,7 @@ class WeekData {
   final bool completed;
   final DateTime endsAt;
   final int registeredPlayers;
+  final List<String> participantsID;
 
   final String description;
   WeekData({
@@ -20,6 +23,7 @@ class WeekData {
     required this.completed,
     required this.endsAt,
     required this.registeredPlayers,
+    required this.participantsID,
     this.description = "The highest person of the GameWeek wins",
   });
 
@@ -31,6 +35,7 @@ class WeekData {
     bool? completed,
     DateTime? endsAt,
     int? registeredPlayers,
+    List<String>? participantsID,
     String? description,
   }) {
     return WeekData(
@@ -41,6 +46,7 @@ class WeekData {
       completed: completed ?? this.completed,
       endsAt: endsAt ?? this.endsAt,
       registeredPlayers: registeredPlayers ?? this.registeredPlayers,
+      participantsID: participantsID ?? this.participantsID,
       description: description ?? this.description,
     );
   }
@@ -54,6 +60,7 @@ class WeekData {
       'completed': completed,
       'endsAt': endsAt.millisecondsSinceEpoch,
       'registeredPlayers': registeredPlayers,
+      'participantsID': participantsID,
       'description': description,
     };
   }
@@ -67,6 +74,7 @@ class WeekData {
       completed: map['completed'] as bool,
       endsAt: DateTime.fromMillisecondsSinceEpoch(map['endsAt'] as int),
       registeredPlayers: map['registeredPlayers'] as int,
+      participantsID: List<String>.from((map['participantsID'])),
       description: map['description'] as String,
     );
   }
@@ -78,7 +86,7 @@ class WeekData {
 
   @override
   String toString() {
-    return 'WeekData(weekID: $weekID, maxPlayers: $maxPlayers, isOpen: $isOpen, entryFee: $entryFee, completed: $completed, endsAt: $endsAt, registeredPlayers: $registeredPlayers, description: $description)';
+    return 'WeekData(weekID: $weekID, maxPlayers: $maxPlayers, isOpen: $isOpen, entryFee: $entryFee, completed: $completed, endsAt: $endsAt, registeredPlayers: $registeredPlayers, participantsID: $participantsID, description: $description)';
   }
 
   @override
@@ -92,6 +100,7 @@ class WeekData {
         other.completed == completed &&
         other.endsAt == endsAt &&
         other.registeredPlayers == registeredPlayers &&
+        listEquals(other.participantsID, participantsID) &&
         other.description == description;
   }
 
@@ -104,6 +113,7 @@ class WeekData {
         completed.hashCode ^
         endsAt.hashCode ^
         registeredPlayers.hashCode ^
+        participantsID.hashCode ^
         description.hashCode;
   }
 }

@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -63,6 +64,9 @@ const _heightLastConsume = 100.0;
 
 class Globals {
   static DateTime finale = DateTime.now();
+
+  static TextStyle competitionHeading =
+      GoogleFonts.maidenOrange(fontSize: 60, fontWeight: FontWeight.w400);
 
   static String formatTime(DateTime dateTime) {
     final now = DateTime.now();
