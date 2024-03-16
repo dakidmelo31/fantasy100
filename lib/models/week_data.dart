@@ -117,3 +117,76 @@ class WeekData {
         description.hashCode;
   }
 }
+
+class Week {
+  final String description;
+  final int highestPoint;
+  final int bonus;
+  final List<Map<String, dynamic>> participants;
+  Week({
+    required this.description,
+    required this.highestPoint,
+    required this.bonus,
+    required this.participants,
+  });
+
+  Week copyWith({
+    String? description,
+    int? highestPoint,
+    int? bonus,
+    List<Map<String, dynamic>>? participants,
+  }) {
+    return Week(
+      description: description ?? this.description,
+      highestPoint: highestPoint ?? this.highestPoint,
+      bonus: bonus ?? this.bonus,
+      participants: participants ?? this.participants,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'description': description,
+      'highestPoint': highestPoint,
+      'bonus': bonus,
+      'participants': participants,
+    };
+  }
+
+  factory Week.fromMap(Map<String, dynamic> map) {
+    return Week(
+      description: map['description'] as String,
+      highestPoint: map['highestPoint'] as int,
+      bonus: map['bonus'] as int,
+      participants: List<Map<String, dynamic>>.from(map['participants']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Week.fromJson(String source) =>
+      Week.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  @override
+  String toString() {
+    return 'Week(description: $description, highestPoint: $highestPoint, bonus: $bonus, participants: $participants)';
+  }
+
+  @override
+  bool operator ==(covariant Week other) {
+    if (identical(this, other)) return true;
+
+    return other.description == description &&
+        other.highestPoint == highestPoint &&
+        other.bonus == bonus &&
+        listEquals(other.participants, participants);
+  }
+
+  @override
+  int get hashCode {
+    return description.hashCode ^
+        highestPoint.hashCode ^
+        bonus.hashCode ^
+        participants.hashCode;
+  }
+}

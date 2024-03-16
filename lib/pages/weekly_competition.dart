@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,9 +36,9 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
       child: Scaffold(
         body: Stack(
           children: [
-            // if (false)
-            Image.asset("assets/4.jpg",
-                fit: BoxFit.cover, width: size.width, height: size.height),
+            if (false)
+              Image.asset("assets/4.jpg",
+                  fit: BoxFit.cover, width: size.width, height: size.height),
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
               child: SizedBox(
@@ -52,7 +51,6 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
               child: Lottie.asset("$dir/bg2.json",
                   fit: BoxFit.cover, width: size.width, height: size.height),
             ),
-
             Positioned(
               left: 0,
               right: 0,
@@ -62,6 +60,7 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
                 slivers: [
                   SliverAppBar(
                     onStretchTrigger: () async {
+                      debugPrint("UserID: ${auth.currentUser?.uid}");
                       Future.delayed(Duration.zero, () async {
                         await data.refreshGameweek();
                         Globals.vibrate();
@@ -135,10 +134,8 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
                                     heroTag: "add_more",
                                     onPressed: () {
                                       HapticFeedback.heavyImpact();
-                                      Navigator.push(
-                                          context,
-                                          SizeTransition22(
-                                              const WeeklyCompetition()));
+                                      Navigator.push(context,
+                                          SizeTransition22(const TopUp()));
                                     },
                                     backgroundColor: Colors.black,
                                     shape: const CircleBorder(),

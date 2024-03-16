@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hospital/models/manager.dart';
 import 'package:hospital/models/player.dart';
+import 'package:hospital/models/system_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cash_model.dart';
@@ -30,16 +31,28 @@ class DataProvider extends ChangeNotifier {
 
   Future<void> refreshGameweek() async {
     weeklyCompetition.clear();
-    for (var i = 0; i < 8; i++) {
-      weeklyCompetition.add(WeekData(
-          weekID: 'weekID',
-          maxPlayers: Random().nextInt(6000),
-          isOpen: Random().nextBool(),
-          entryFee: [200, 500, 100, 50, 250, 600][Random().nextInt(5)],
-          participantsID: [],
-          completed: false,
-          registeredPlayers: Random().nextInt(5000),
-          endsAt: DateTime.now().add(Duration(days: 2 * i, hours: 6))));
+    for (var i = 0; i < 6; i++) {
+      final week = WeekData(
+        weekID: '${Random().nextInt(999999999)}',
+        maxPlayers: Random().nextInt(6000),
+        isOpen: Random().nextBool(),
+        entryFee: [200, 500, 100, 50, 250, 600][Random().nextInt(5)],
+        participantsID: [],
+        completed: false,
+        registeredPlayers: Random().nextInt(5000),
+        endsAt: DateTime.now().add(
+          Duration(
+              days: 2 * i,
+              hours: Random().nextInt(24),
+              minutes: Random().nextInt(60)),
+        ),
+      );
+      if (Random().nextBool()) {
+        week.participantsID.add(auth.currentUser!.uid);
+      }
+      weeklyCompetition.add(
+        week,
+      );
     }
     toast(message: "done loading");
     for (var e in weeklyCompetition) {
@@ -79,6 +92,7 @@ class DataProvider extends ChangeNotifier {
   }
 
   DataProvider() {
+    loadSystem();
     loadUser();
     loadOverviews();
     loadGroups();
@@ -303,6 +317,30 @@ class DataProvider extends ChangeNotifier {
 
   getManager(int index) {
     return managers[index];
+  }
+
+  late final SystemData system;
+  Future<void> loadSystem() async {
+    await firestore.collection("systemData").doc("info").set({
+      "endsAt": DateTime.now()
+          .add(const Duration(days: 6, minutes: 28))
+          .millisecondsSinceEpoch,
+      "currentGameweek": "GW27",
+      "gameweekTitle": "Gameweek 27",
+      "ended": false,
+      "winBonus": 2000
+    });
+    await firestore.collection("systemData").doc("info").get().then((value) {
+      if (value.exists) {
+        final data = value.data()!;
+        system = SystemData(
+            currentGameweek: data['currentGameweek'],
+            endsAt: DateTime.fromMillisecondsSinceEpoch(data['endsAt']),
+            ended: data['ended'],
+            winBonus: data['winBonus'],
+            gameweekTitle: data['gameweekTitle']);
+      }
+    });
   }
 
   loadUser() async {
