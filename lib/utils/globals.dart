@@ -68,6 +68,14 @@ class Globals {
   static TextStyle competitionHeading =
       GoogleFonts.maidenOrange(fontSize: 60, fontWeight: FontWeight.w400);
 
+  static late String season;
+
+  static String competitionTitle = 'weeklyCompetition';
+
+  static late String gameweek;
+
+  static bool dontAskAgain = false;
+
   static String formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_count_down/date_count_down.dart';
@@ -56,7 +57,7 @@ class _SignupPageState extends State<SignupPage> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: Globals.primaryBackground,
+        backgroundColor: Globals.white,
         body: ListView(
           scrollDirection: Axis.horizontal,
           children: [
@@ -84,7 +85,7 @@ class _SignupPageState extends State<SignupPage> {
                       bottom: 0,
                       left: 0,
                       right: 0,
-                      child: Lottie.asset("assets/lottie/walking3.json",
+                      child: Lottie.asset("assets/lottie/ripple3.json",
                           fit: BoxFit.cover),
                     ).animate(
                       target: _formState == LoginState.login ? 1 : 0,
@@ -172,191 +173,200 @@ class _SignupPageState extends State<SignupPage> {
                             color: Colors.transparent,
                             curve: Curves.fastLinearToSlowEaseIn,
                             width: size.width,
-                            height: switchIt ? 70.0 : size.height * .56,
+                            height: switchIt ? 70.0 : size.height * .39,
                             child: Card(
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 20.0),
                               elevation: 15.0,
-                              shadowColor: Colors.black.withOpacity(.15),
-                              surfaceTintColor: Globals.accentColor,
-                              color: Colors.white,
-                              child: Center(
-                                child: AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 500),
-                                  switchOutCurve: Curves.fastLinearToSlowEaseIn,
-                                  transitionBuilder: (child, animation) {
-                                    return ScaleTransition(
-                                        scale: animation, child: child);
-                                  },
-                                  child: switchIt
-                                      ? TextField(
-                                          maxLength: 6,
-                                          controller: _otpController,
-                                          onChanged: (val) {
-                                            if (val.length == 6) {
-                                              FocusManager
-                                                  .instance.primaryFocus!
-                                                  .unfocus();
-                                              debugPrint("valid now");
-                                              // FocusManager().primaryFocus?.unfocus();
-                                            } else {}
-                                          },
-                                          keyboardType: TextInputType.phone,
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 18.0,
-                                              letterSpacing: 14.0),
-                                          textAlign: TextAlign.center,
-                                          decoration: InputDecoration(
-                                            hintText: "6 Numbers",
-                                            label: Text("Request OTP",
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 14.0,
-                                                    letterSpacing: 6.0)),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                    horizontal: 20.0),
-                                            border: InputBorder.none,
-                                          ),
-                                        )
-                                      : AbsorbPointer(
-                                          absorbing:
-                                              _formState == LoginState.otpSent,
-                                          child: Column(
-                                            children: [
-                                              TextFormField(
-                                                maxLength: 8,
-                                                controller: _referralController,
-                                                onChanged: (val) {
-                                                  setState(() {
-                                                    _referralController.text
-                                                        .toUpperCase();
-                                                  });
-                                                },
-                                                keyboardType:
-                                                    TextInputType.name,
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 18.0,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                                decoration: InputDecoration(
-                                                  hintText: "8 characters",
-                                                  label: Text('Referral Code',
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                        fontSize: 14.0,
-                                                      )),
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 20.0),
-                                                  border: InputBorder.none,
-                                                ),
-                                              ),
-                                              TextFormField(
-                                                maxLength: 9,
-                                                controller: _numberController,
-                                                onChanged: (val) {
-                                                  if (val.length == 9) {
-                                                    FocusManager
-                                                        .instance.primaryFocus!
-                                                        .unfocus();
-                                                    debugPrint("valid now");
-                                                    // FocusManager().primaryFocus?.unfocus();
-                                                  } else {}
-                                                },
-                                                validator: (val) {
-                                                  if (val != null &&
-                                                      val.length == 9) {
-                                                    // FocusManager.instance.primaryFocus!.unfocus();
-                                                    debugPrint("valid now");
-                                                    FocusManager()
-                                                        .primaryFocus
-                                                        ?.unfocus();
+                              shadowColor: Colors.black.withOpacity(.25),
+                              surfaceTintColor: Globals.white,
+                              color: Colors.white.withOpacity(.15),
+                              clipBehavior: Clip.hardEdge,
+                              child: BackdropFilter(
+                                filter:
+                                    ImageFilter.blur(sigmaX: 18, sigmaY: 19),
+                                child: Center(
+                                  child: AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 500),
+                                    switchOutCurve:
+                                        Curves.fastLinearToSlowEaseIn,
+                                    transitionBuilder: (child, animation) {
+                                      return ScaleTransition(
+                                          scale: animation, child: child);
+                                    },
+                                    child: switchIt
+                                        ? TextField(
+                                            maxLength: 6,
+                                            controller: _otpController,
+                                            onChanged: (val) {
+                                              if (val.length == 6) {
+                                                FocusManager
+                                                    .instance.primaryFocus!
+                                                    .unfocus();
+                                                debugPrint("valid now");
+                                                // FocusManager().primaryFocus?.unfocus();
+                                              } else {}
+                                            },
+                                            keyboardType: TextInputType.phone,
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 18.0,
+                                                letterSpacing: 14.0),
+                                            textAlign: TextAlign.center,
+                                            decoration: InputDecoration(
+                                              hintText: "6 Numbers",
+                                              label: Text("Request OTP",
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 14.0,
+                                                      letterSpacing: 6.0)),
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20.0),
+                                              border: InputBorder.none,
+                                            ),
+                                          )
+                                        : AbsorbPointer(
+                                            absorbing: _formState ==
+                                                LoginState.otpSent,
+                                            child: Column(
+                                              children: [
+                                                TextFormField(
+                                                  maxLength: 8,
+                                                  controller:
+                                                      _referralController,
+                                                  onChanged: (val) {
                                                     setState(() {
-                                                      // _inputState = SignupState.valid;
+                                                      _referralController.text
+                                                          .toUpperCase();
                                                     });
-
-                                                    debugPrint(
-                                                        "Verified phone");
-                                                    return null;
-                                                  } else {
-                                                    debugPrint(
-                                                        "Phone number invalid");
-                                                    setState(() {
-                                                      // _inputState = SignupState.invalid;
-                                                    });
-                                                  }
-                                                  return "Enter phone number";
-                                                },
-                                                keyboardType:
-                                                    TextInputType.phone,
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 18.0,
-                                                    letterSpacing: 14.0),
-                                                decoration: InputDecoration(
-                                                  hintText: "(+237)",
-                                                  label: Text("Phone",
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              fontSize: 14.0,
-                                                              letterSpacing:
-                                                                  6.0)),
-                                                  contentPadding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 20.0),
-                                                  border: InputBorder.none,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 30),
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                      "By using this application:"),
-                                                  ListTile(
-                                                    enableFeedback: true,
-                                                    dense: true,
-                                                    trailing: Switch.adaptive(
-                                                      value: privacyPolicy,
-                                                      activeColor:
-                                                          Globals.primaryColor,
-                                                      onChanged: (va) {
-                                                        setState(() {
-                                                          privacyPolicy = va;
-                                                        });
-                                                      },
-                                                    ),
-                                                    title: Text(
-                                                        "You accept our Privacy Policy"),
-                                                    subtitle:
-                                                        Text("Tap to read"),
-                                                    onTap: () =>
-                                                        Globals.toast("msg"),
+                                                  },
+                                                  keyboardType:
+                                                      TextInputType.name,
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 18.0,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                  decoration: InputDecoration(
+                                                    hintText: "8 characters",
+                                                    label: Text('Referral Code',
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                          fontSize: 14.0,
+                                                        )),
+                                                    contentPadding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            horizontal: 20.0),
+                                                    border: InputBorder.none,
                                                   ),
-                                                  ListTile(
+                                                ),
+                                                TextFormField(
+                                                  maxLength: 9,
+                                                  controller: _numberController,
+                                                  onChanged: (val) {
+                                                    if (val.length == 9) {
+                                                      FocusManager.instance
+                                                          .primaryFocus!
+                                                          .unfocus();
+                                                      debugPrint("valid now");
+                                                      // FocusManager().primaryFocus?.unfocus();
+                                                    } else {}
+                                                  },
+                                                  validator: (val) {
+                                                    if (val != null &&
+                                                        val.length == 9) {
+                                                      // FocusManager.instance.primaryFocus!.unfocus();
+                                                      debugPrint("valid now");
+                                                      FocusManager()
+                                                          .primaryFocus
+                                                          ?.unfocus();
+                                                      setState(() {
+                                                        // _inputState = SignupState.valid;
+                                                      });
+
+                                                      debugPrint(
+                                                          "Verified phone");
+                                                      return null;
+                                                    } else {
+                                                      debugPrint(
+                                                          "Phone number invalid");
+                                                      setState(() {
+                                                        // _inputState = SignupState.invalid;
+                                                      });
+                                                    }
+                                                    return "Enter phone number";
+                                                  },
+                                                  keyboardType:
+                                                      TextInputType.phone,
+                                                  style: GoogleFonts.poppins(
+                                                      fontSize: 18.0,
+                                                      letterSpacing: 14.0),
+                                                  decoration: InputDecoration(
+                                                    hintText: "(+237)",
+                                                    label: Text("Phone",
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                                fontSize: 14.0,
+                                                                letterSpacing:
+                                                                    6.0)),
+                                                    contentPadding:
+                                                        const EdgeInsets
+                                                            .symmetric(
+                                                            horizontal: 20.0),
+                                                    border: InputBorder.none,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 30),
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                        "By using this application:"),
+                                                    ListTile(
                                                       enableFeedback: true,
                                                       dense: true,
+                                                      trailing: Switch.adaptive(
+                                                        value: privacyPolicy,
+                                                        activeColor: Globals
+                                                            .primaryColor,
+                                                        onChanged: (va) {
+                                                          setState(() {
+                                                            privacyPolicy = va;
+                                                          });
+                                                        },
+                                                      ),
                                                       title: Text(
-                                                          "Accept our term of use"),
+                                                          "You accept our Privacy Policy"),
                                                       subtitle:
                                                           Text("Tap to read"),
                                                       onTap: () =>
                                                           Globals.toast("msg"),
-                                                      trailing: Switch.adaptive(
-                                                        activeColor: Globals
-                                                            .primaryColor,
-                                                        value: terms,
-                                                        onChanged: (va) {
-                                                          setState(() {
-                                                            terms = va;
-                                                          });
-                                                        },
-                                                      ))
-                                                ],
-                                              ),
-                                            ],
+                                                    ),
+                                                    ListTile(
+                                                        enableFeedback: true,
+                                                        dense: true,
+                                                        title: Text(
+                                                            "Accept our term of use"),
+                                                        subtitle:
+                                                            Text("Tap to read"),
+                                                        onTap: () =>
+                                                            Globals.toast(
+                                                                "msg"),
+                                                        trailing:
+                                                            Switch.adaptive(
+                                                          activeColor: Globals
+                                                              .primaryColor,
+                                                          value: terms,
+                                                          onChanged: (va) {
+                                                            setState(() {
+                                                              terms = va;
+                                                            });
+                                                          },
+                                                        ))
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -525,7 +535,7 @@ class _SignupPageState extends State<SignupPage> {
                     top: 0,
                     child: AnimatedContainer(
                       duration: Globals.mainDuration,
-                      color: Colors.black.withOpacity(.5),
+                      color: Colors.white.withOpacity(.5),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -715,7 +725,7 @@ class _SignupPageState extends State<SignupPage> {
                   photo: Globals.photoPlaceholder,
                   teamID: 0,
                   verified: false,
-                  userID: '',
+                  userID: value.user!.uid,
                   referrer: referrer,
                   referralSettled: false,
                   location: '',
@@ -928,7 +938,7 @@ class _SignupPageState extends State<SignupPage> {
               photo: Globals.photoPlaceholder,
               teamID: 0,
               verified: false,
-              userID: '',
+              userID: value.user!.uid,
               referrer: referrer,
               referralSettled: false,
               location: '',

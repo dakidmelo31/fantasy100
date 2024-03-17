@@ -145,6 +145,7 @@ void main() async {
 
   googleToken = prefs.getString("userToken") ?? '';
   userID = prefs.getInt("userID") ?? 0;
+  Globals.dontAskAgain = prefs.containsKey("dontAskAgain");
   Globals.verified = prefs.getBool("verified") ?? false;
 
   toast(message: googleToken);

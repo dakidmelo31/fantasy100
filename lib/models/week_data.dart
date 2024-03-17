@@ -4,8 +4,8 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
-class WeekData {
-  final String weekID;
+class RoomModel {
+  String weekID;
   final int maxPlayers;
   final bool isOpen;
   final int entryFee;
@@ -15,7 +15,9 @@ class WeekData {
   final List<String> participantsID;
 
   final String description;
-  WeekData({
+
+  final String info;
+  RoomModel({
     required this.weekID,
     required this.maxPlayers,
     required this.isOpen,
@@ -24,10 +26,11 @@ class WeekData {
     required this.endsAt,
     required this.registeredPlayers,
     required this.participantsID,
-    this.description = "The highest person of the GameWeek wins",
+    required this.description,
+    required this.info,
   });
 
-  WeekData copyWith({
+  RoomModel copyWith({
     String? weekID,
     int? maxPlayers,
     bool? isOpen,
@@ -37,8 +40,9 @@ class WeekData {
     int? registeredPlayers,
     List<String>? participantsID,
     String? description,
+    String? info,
   }) {
-    return WeekData(
+    return RoomModel(
       weekID: weekID ?? this.weekID,
       maxPlayers: maxPlayers ?? this.maxPlayers,
       isOpen: isOpen ?? this.isOpen,
@@ -48,6 +52,7 @@ class WeekData {
       registeredPlayers: registeredPlayers ?? this.registeredPlayers,
       participantsID: participantsID ?? this.participantsID,
       description: description ?? this.description,
+      info: info ?? this.info,
     );
   }
 
@@ -62,11 +67,13 @@ class WeekData {
       'registeredPlayers': registeredPlayers,
       'participantsID': participantsID,
       'description': description,
+      'info': info,
     };
   }
 
-  factory WeekData.fromMap(Map<String, dynamic> map) {
-    return WeekData(
+  factory RoomModel.fromMap(Map<String, dynamic> map) {
+    debugPrint("*******  ${map['participantsID']}  ****************");
+    return RoomModel(
       weekID: map['weekID'] as String,
       maxPlayers: map['maxPlayers'] as int,
       isOpen: map['isOpen'] as bool,
@@ -76,21 +83,22 @@ class WeekData {
       registeredPlayers: map['registeredPlayers'] as int,
       participantsID: List<String>.from((map['participantsID'])),
       description: map['description'] as String,
+      info: map['info'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory WeekData.fromJson(String source) =>
-      WeekData.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory RoomModel.fromJson(String source) =>
+      RoomModel.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
-    return 'WeekData(weekID: $weekID, maxPlayers: $maxPlayers, isOpen: $isOpen, entryFee: $entryFee, completed: $completed, endsAt: $endsAt, registeredPlayers: $registeredPlayers, participantsID: $participantsID, description: $description)';
+    return 'WeekData(weekID: $weekID, maxPlayers: $maxPlayers, isOpen: $isOpen, entryFee: $entryFee, completed: $completed, endsAt: $endsAt, registeredPlayers: $registeredPlayers, participantsID: $participantsID, description: $description, info: $info)';
   }
 
   @override
-  bool operator ==(covariant WeekData other) {
+  bool operator ==(covariant RoomModel other) {
     if (identical(this, other)) return true;
 
     return other.weekID == weekID &&
@@ -101,7 +109,8 @@ class WeekData {
         other.endsAt == endsAt &&
         other.registeredPlayers == registeredPlayers &&
         listEquals(other.participantsID, participantsID) &&
-        other.description == description;
+        other.description == description &&
+        other.info == info;
   }
 
   @override
@@ -114,7 +123,8 @@ class WeekData {
         endsAt.hashCode ^
         registeredPlayers.hashCode ^
         participantsID.hashCode ^
-        description.hashCode;
+        description.hashCode ^
+        info.hashCode;
   }
 }
 

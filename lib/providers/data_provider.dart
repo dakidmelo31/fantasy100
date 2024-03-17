@@ -27,32 +27,44 @@ class DataProvider extends ChangeNotifier {
 
   List<CashModel> transactions = [];
 
-  List<WeekData> weeklyCompetition = [];
+  List<RoomModel> weeklyCompetition = [];
 
   Future<void> refreshGameweek() async {
     weeklyCompetition.clear();
-    for (var i = 0; i < 6; i++) {
-      final week = WeekData(
-        weekID: '${Random().nextInt(999999999)}',
-        maxPlayers: Random().nextInt(6000),
-        isOpen: Random().nextBool(),
-        entryFee: [200, 500, 100, 50, 250, 600][Random().nextInt(5)],
-        participantsID: [],
-        completed: false,
-        registeredPlayers: Random().nextInt(5000),
-        endsAt: DateTime.now().add(
-          Duration(
-              days: 2 * i,
-              hours: Random().nextInt(24),
-              minutes: Random().nextInt(60)),
-        ),
-      );
-      if (Random().nextBool()) {
-        week.participantsID.add(auth.currentUser!.uid);
-      }
-      weeklyCompetition.add(
-        week,
-      );
+
+    final snap = await firestore
+        .collection("seasons")
+        .doc(Globals.season)
+        .collection("weeks")
+        .doc(Globals.gameweek)
+        .collection(Globals.competitionTitle)
+        .get();
+
+    if (snap.docs.isEmpty) {
+      debugPrint("((((( Season is Empty )))))");
+      toast(message: "Season is Empty");
+    } else {
+      debugPrint("((((( * Weeks: ${snap.docs.length} * )))))");
+      toast(message: "Season is Weeks: ${snap.docs.length}");
+    }
+    for (var item in snap.docs) {
+      // await firestore
+      //     .collection("seasons")
+      //     .doc(Globals.season)
+      //     .collection("weeks")
+      //     .doc(Globals.gameweek)
+      //     .collection(Globals.competitionTitle)
+      //     .doc(item.id)
+      //     .update({
+      //   "info":
+      //       "To encourage ongoing participation and fair play, the winner of each GameWeek will be required to participate in 10 additional rounds. This means their winnings will be credited as usual, but they will be automatically enrolled in the next 10 GameWeeks."
+      //   // "endsAt": DateTime.now().add(Duration(days: 9)).millisecondsSinceEpoch
+      // });
+
+      final week = RoomModel.fromMap(item.data());
+      week.weekID = item.id;
+
+      weeklyCompetition.add(week);
     }
     toast(message: "done loading");
     for (var e in weeklyCompetition) {
@@ -92,15 +104,18 @@ class DataProvider extends ChangeNotifier {
   }
 
   DataProvider() {
-    loadSystem();
-    loadUser();
-    loadOverviews();
-    loadGroups();
-    loadFantasyGroup();
-    loadTransactions();
-    check();
-    refreshGameweek();
+    init();
   }
+  init() async {
+    await loadSystem();
+    await loadUser();
+    await loadOverviews();
+    await loadGroups();
+    await loadFantasyGroup();
+    await loadTransactions();
+    await check();
+  }
+
   Future<void> check() async {
     // await firestore.collection("system").doc("information").set({
     //   "finale": DateTime.now().add(Duration(days: 120)).millisecondsSinceEpoch
@@ -320,26 +335,35 @@ class DataProvider extends ChangeNotifier {
   }
 
   late final SystemData system;
+
   Future<void> loadSystem() async {
-    await firestore.collection("systemData").doc("info").set({
-      "endsAt": DateTime.now()
-          .add(const Duration(days: 6, minutes: 28))
-          .millisecondsSinceEpoch,
-      "currentGameweek": "GW27",
-      "gameweekTitle": "Gameweek 27",
-      "ended": false,
-      "winBonus": 2000
-    });
+    // await firestore.collection("systemData").doc("info").set({
+    //   "endsAt": DateTime.now()
+    //       .add(const Duration(days: 6, minutes: 28))
+    //       .millisecondsSinceEpoch,
+    //   "currentGameweek": "GW27",
+    //   "season": "2024",
+    //   "gameweekTitle": "Gameweek 27",
+    //   "ended": false,
+    //   "winBonus": 2000
+    // });
     await firestore.collection("systemData").doc("info").get().then((value) {
       if (value.exists) {
         final data = value.data()!;
         system = SystemData(
             currentGameweek: data['currentGameweek'],
+            highest: data['highest'],
             endsAt: DateTime.fromMillisecondsSinceEpoch(data['endsAt']),
+            season: data['season'],
             ended: data['ended'],
             winBonus: data['winBonus'],
             gameweekTitle: data['gameweekTitle']);
+
+        Globals.season = system.season;
+        Globals.gameweek = system.currentGameweek;
       }
+    }).then((value) async {
+      await refreshGameweek();
     });
   }
 
@@ -401,9 +425,61 @@ class DataProvider extends ChangeNotifier {
 
   CurrentUser? me;
 
-  WeekData? getWeek(String weekID) {
-    List<WeekData?> data = [...weeklyCompetition];
+  RoomModel? getWeek(String weekID) {
+    List<RoomModel?> data = [...weeklyCompetition];
     return data.firstWhere((element) => element!.weekID == weekID,
         orElse: () => null);
+  }
+
+  enterRoom(String weekID) async {
+    final room = weeklyCompetition.firstWhere((e) => e.weekID == weekID);
+    if (me != null && me!.balance >= room.entryFee) {
+      debugPrint("WEEK ID: $weekID");
+
+      if (weeklyCompetition[weeklyCompetition
+              .indexWhere((element) => element.weekID == weekID)]
+          .participantsID
+          .contains(auth.currentUser!.uid)) {
+        toast(message: "You already Joined");
+        return;
+      }
+
+      final DocumentReference documentReference = firestore
+          .collection("seasons")
+          .doc(Globals.season)
+          .collection("weeks")
+          .doc(Globals.gameweek)
+          .collection(Globals.competitionTitle)
+          .doc(weekID);
+      await firestore.runTransaction((transaction) async {
+        final snap = await transaction.get(documentReference);
+        if (!snap.exists) {
+          toast(message: "Room does not exist, try again");
+          return;
+        }
+        transaction.update(documentReference, {
+          "participantsID": FieldValue.arrayUnion([auth.currentUser!.uid])
+        });
+      }).then((value) async {
+        DocumentReference documentReference =
+            firestore.collection("users").doc(auth.currentUser!.uid);
+        await firestore.runTransaction((transaction) async {
+          final snap = await transaction.get(documentReference);
+          if (!snap.exists) {
+            toast(message: "Room does not exist, try again");
+            return;
+          }
+          transaction.update(documentReference,
+              {"participants": FieldValue.increment(room.entryFee)});
+        }).then((value) {
+          toast(message: "Joined Successfully");
+          weeklyCompetition[weeklyCompetition
+                  .indexWhere((element) => element.weekID == weekID)]
+              .participantsID
+              .add(auth.currentUser!.uid);
+          notifyListeners();
+        });
+      });
+    }
   }
 }

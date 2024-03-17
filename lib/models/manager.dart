@@ -1,6 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
+import '../utils/globals.dart';
+
 class Manager {
   final int id;
   final String teamName;
@@ -76,9 +80,10 @@ class Manager {
     };
   }
 
-  factory Manager.fromMap(Map<String, dynamic> map) {
+  factory Manager.fromMap(Map<String, dynamic> map, {String id = ''}) {
+    // debugPrint("Raw: $map");
     return Manager(
-      id: map['id'] as int,
+      id: map.containsKey('id') ? map['id'] : map['teamID'],
       teamName: map['name'] as String,
       score: map['score'] as int,
       lastRank: map['lastRank'] as int,
@@ -86,8 +91,12 @@ class Manager {
       total: map['total'] as int,
       username: map['username'] as String,
       rankSort: map['rankSort'] as int,
-      entry: map['entry'] as int,
-      image: map['image'] as String,
+      entry: map.containsKey('entry') ? map['entry'] : map['teamID'],
+      image: map.containsKey('image')
+          ? map['image']
+          : map.containsKey("photo")
+              ? map['photo']
+              : Globals.photoPlaceholder,
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_count_down/date_count_down.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,18 +11,25 @@ import 'package:hospital/pages/weekly_participants.dart';
 import 'package:hospital/providers/data_provider.dart';
 import 'package:hospital/utils/globals.dart';
 import 'package:hospital/utils/transitions.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-class WeeklyWidget extends StatelessWidget {
-  const WeeklyWidget({super.key, required this.weekID});
+class Room extends StatefulWidget {
+  const Room({super.key, required this.weekID});
   final String weekID;
 
+  @override
+  State<Room> createState() => _RoomState();
+}
+
+class _RoomState extends State<Room> {
+  bool playing = false;
   @override
   Widget build(BuildContext context) {
     final size = getSize(context);
     final data = Provider.of<DataProvider>(context, listen: true);
 
-    final week = data.getWeek(weekID);
+    final room = data.getWeek(widget.weekID);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
@@ -29,7 +37,7 @@ class WeeklyWidget extends StatelessWidget {
       transitionBuilder: (child, animation) {
         return ScaleTransition(scale: animation, child: child);
       },
-      child: week == null
+      child: room == null
           ? Padding(
               padding: const EdgeInsets.only(bottom: 18.0),
               child: DecoratedBox(
@@ -72,8 +80,8 @@ class WeeklyWidget extends StatelessWidget {
                               HapticFeedback.heavyImpact();
                               Navigator.push(
                                   context,
-                                  SizeTransition3(
-                                      WeeklyParticipants(weekID: week.weekID)));
+                                  SizeTransition2(
+                                      WeeklyParticipants(weekID: room.weekID)));
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
@@ -89,12 +97,12 @@ class WeeklyWidget extends StatelessWidget {
                                     children: [
                                       SizedBox(
                                           width: 170,
-                                          child: Text(week.description)),
+                                          child: Text(room.description)),
                                       Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                            CrossAxisAlignment.end,
                                         children: [
                                           Text(
                                             "Cash Prize",
@@ -107,14 +115,14 @@ class WeeklyWidget extends StatelessWidget {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              SelectableText(
+                                              Text(
                                                 prettyNumber(
-                                                    week.registeredPlayers *
-                                                        week.entryFee),
+                                                    room.participantsID.length *
+                                                        room.entryFee),
                                                 style:
                                                     GoogleFonts.sawarabiGothic(
                                                         fontSize: 26,
-                                                        color: week.isOpen
+                                                        color: room.isOpen
                                                             ? const Color(
                                                                 0xff000033)
                                                             : const Color(
@@ -143,7 +151,12 @@ class WeeklyWidget extends StatelessWidget {
                                     child: Row(
                                       children: [
                                         Text(
-                                            "${prettyNumber(week.registeredPlayers)} Playing"),
+                                          "Entry fee ",
+                                          style: GoogleFonts.roboto(
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                        Text(
+                                            "${prettyNumber(room.entryFee)} CFA"),
                                       ],
                                     ),
                                   ),
@@ -154,7 +167,7 @@ class WeeklyWidget extends StatelessWidget {
                                     transitionBuilder: (child, animation) =>
                                         ScaleTransition(
                                             scale: animation, child: child),
-                                    child: !week.participantsID
+                                    child: room.participantsID
                                             .contains(auth.currentUser?.uid)
                                         ? Row(
                                             mainAxisAlignment:
@@ -171,19 +184,19 @@ class WeeklyWidget extends StatelessWidget {
                                                         const EdgeInsets.all(
                                                             8.0),
                                                     child: Icon(
-                                                      week.isOpen
+                                                      room.isOpen
                                                           ? FontAwesomeIcons
                                                               .lockOpen
                                                           : FontAwesomeIcons
                                                               .lock,
-                                                      color: week.isOpen
+                                                      color: room.isOpen
                                                           ? const Color(
                                                               0xff00aa00)
                                                           : Globals.pink,
                                                       size: 15,
                                                     ),
                                                   ),
-                                                  Text(week.isOpen
+                                                  Text(room.isOpen
                                                       ? "Join Room"
                                                       : "Closed")
                                                 ],
@@ -202,10 +215,15 @@ class WeeklyWidget extends StatelessWidget {
                                                       horizontal: 28.0,
                                                       vertical: 16),
                                                   child: CountDownText(
-                                                      due: week.endsAt,
-                                                      style: Globals.heading,
-                                                      finishedText:
-                                                          "GameWeek 35 Completed"),
+                                                      due: room.endsAt,
+                                                      style: room.endsAt
+                                                              .isBefore(DateTime
+                                                                  .now())
+                                                          ? GoogleFonts
+                                                              .poppins()
+                                                          : GoogleFonts
+                                                              .poppins(),
+                                                      finishedText: "Complete"),
                                                 ),
                                               ),
                                               Column(
@@ -231,8 +249,9 @@ class WeeklyWidget extends StatelessWidget {
                                                           ),
                                                         ),
                                                       ),
-                                                      Text(prettyNumber(week
-                                                          .registeredPlayers)),
+                                                      Text(prettyNumber(room
+                                                          .participantsID
+                                                          .length)),
                                                     ],
                                                   ),
                                                   const Text("Now Playing")
@@ -240,17 +259,224 @@ class WeeklyWidget extends StatelessWidget {
                                               )
                                             ],
                                           )
-                                        : MaterialButton(
-                                            color: Colors.black,
-                                            textColor: Colors.white,
-                                            shape: Globals.radius(26),
-                                            height: 50,
-                                            onPressed: () {
-                                              HapticFeedback.heavyImpact();
-                                              toast(message: "Entering");
-                                            },
-                                            child: const Text(
-                                                "Enter the Challenge"),
+                                        : Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 28.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceAround,
+                                              children: [
+                                                InkWell(
+                                                  customBorder:
+                                                      const CircleBorder(),
+                                                  onTap: () {
+                                                    showCupertinoDialog(
+                                                        context: context,
+                                                        builder: (_) =>
+                                                            CupertinoAlertDialog(
+                                                              title: const Text(
+                                                                  "Players Protection"),
+                                                              content: Text(
+                                                                room.info,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .left,
+                                                              ),
+                                                              actions: [
+                                                                CupertinoDialogAction(
+                                                                  child:
+                                                                      const Text(
+                                                                          "Okay"),
+                                                                  isDefaultAction:
+                                                                      true,
+                                                                  onPressed: () =>
+                                                                      Navigator.pop(
+                                                                          context),
+                                                                  textStyle: GoogleFonts
+                                                                      .poppins(
+                                                                          color:
+                                                                              Colors.black),
+                                                                )
+                                                              ],
+                                                            ));
+                                                  },
+                                                  child: DecoratedBox(
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: Colors.grey),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50),
+                                                    ),
+                                                    child: const Padding(
+                                                      padding:
+                                                          EdgeInsets.all(18.0),
+                                                      child: Icon(
+                                                        FontAwesomeIcons.info,
+                                                        color: Colors.black,
+                                                        size: 15,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                AnimatedSwitcher(
+                                                  duration: const Duration(
+                                                      milliseconds: 400),
+                                                  switchInCurve:
+                                                      Curves.elasticInOut,
+                                                  switchOutCurve: Curves
+                                                      .fastEaseInToSlowEaseOut,
+                                                  transitionBuilder:
+                                                      (child, animation) =>
+                                                          ScaleTransition(
+                                                    scale: animation,
+                                                    alignment:
+                                                        Alignment.topCenter,
+                                                    child: Align(
+                                                      alignment: Alignment
+                                                          .bottomCenter,
+                                                      child: FadeTransition(
+                                                          opacity: animation,
+                                                          child: child),
+                                                    ),
+                                                  ),
+                                                  child: playing
+                                                      ? Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors
+                                                                .transparent,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        36),
+                                                            border: Border.all(
+                                                                width: 1,
+                                                                color: Colors
+                                                                    .black),
+                                                          ),
+                                                          width: 170,
+                                                          height: 50,
+                                                          child: placeholder,
+                                                        )
+                                                      : MaterialButton(
+                                                          minWidth: 170,
+                                                          color: Colors.black,
+                                                          textColor:
+                                                              Colors.white,
+                                                          shape: Globals.radius(
+                                                              26),
+                                                          height: 50,
+                                                          onPressed: () async {
+                                                            HapticFeedback
+                                                                .heavyImpact();
+                                                            bool dontAskAgain =
+                                                                true;
+
+                                                            bool? outcome;
+
+                                                            if (!Globals
+                                                                .dontAskAgain) {
+                                                              outcome =
+                                                                  await showCupertinoDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder:
+                                                                          (_) {
+                                                                        return StatefulBuilder(
+                                                                          builder: (context, setState) =>
+                                                                              CupertinoAlertDialog(
+                                                                            title:
+                                                                                const Text("Confirm participation"),
+                                                                            content:
+                                                                                Column(
+                                                                              children: [
+                                                                                const Text("You can enter as many competitions (rooms) as you like, but you can only receive a prize for winning in one of them. If you win in multiple groups, you'll be awarded the prize from the competition with the highest payout.\n\n"
+                                                                                    "This helps spread the wealth and allows more players to win! Joining multiple competitions increases your overall chances of winning a prize."),
+                                                                                Material(
+                                                                                  elevation: 0,
+                                                                                  color: Colors.transparent,
+                                                                                  surfaceTintColor: Colors.transparent,
+                                                                                  child: Row(
+                                                                                    children: [
+                                                                                      Checkbox(
+                                                                                          activeColor: Globals.primaryColor,
+                                                                                          value: dontAskAgain,
+                                                                                          onChanged: (v) {
+                                                                                            setState(() {
+                                                                                              dontAskAgain = v!;
+                                                                                            });
+                                                                                          }),
+                                                                                      const Text("Okay don't show this again")
+                                                                                    ],
+                                                                                  ),
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                            actions: [
+                                                                              CupertinoDialogAction(
+                                                                                child: const Text(
+                                                                                  "Enter",
+                                                                                  style: Globals.primaryText,
+                                                                                ),
+                                                                                isDefaultAction: true,
+                                                                                onPressed: () {
+                                                                                  Navigator.pop(context, true);
+                                                                                },
+                                                                              ),
+                                                                              CupertinoDialogAction(
+                                                                                child: const Text(
+                                                                                  "Cancel",
+                                                                                  style: TextStyle(color: Colors.black),
+                                                                                ),
+                                                                                onPressed: () {
+                                                                                  Navigator.pop(context, false);
+                                                                                },
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      }).then((value) async {
+                                                                Globals.flipSettings(
+                                                                    field:
+                                                                        "dontAskAgain");
+                                                                if (!Globals
+                                                                        .dontAskAgain &&
+                                                                    dontAskAgain) {
+                                                                  Globals.dontAskAgain =
+                                                                      dontAskAgain;
+                                                                }
+                                                              });
+                                                            }
+
+                                                            if (Globals.dontAskAgain ==
+                                                                    false &&
+                                                                outcome !=
+                                                                    true) {
+                                                              return;
+                                                            }
+
+                                                            setState(() {
+                                                              playing = true;
+                                                            });
+
+                                                            await Future.delayed(
+                                                                const Duration(
+                                                                    seconds:
+                                                                        1));
+                                                            await data
+                                                                .enterRoom(room
+                                                                    .weekID);
+                                                            setState(() {
+                                                              playing = false;
+                                                            });
+                                                          },
+                                                          child: const Text(
+                                                              "Enter the Challenge"),
+                                                        ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                   )
                                 ],

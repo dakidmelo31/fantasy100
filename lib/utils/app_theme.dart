@@ -8,19 +8,19 @@ class OMITheme {
     // Define your theme properties here
     return ThemeData(
       scaffoldBackgroundColor: Colors.grey[200], // Grey background
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         backgroundColor: Globals.primaryColor,
         elevation: 10,
       ),
-      buttonTheme: ButtonThemeData(
+      buttonTheme: const ButtonThemeData(
         buttonColor: Colors.green, // Green button background
         textTheme: ButtonTextTheme.primary,
       ),
-      iconButtonTheme: IconButtonThemeData(),
-      primaryTextTheme: TextTheme(
+      iconButtonTheme: const IconButtonThemeData(),
+      primaryTextTheme: const TextTheme(
           titleMedium: TextStyle(fontFamily: "Lato"),
           displayLarge: TextStyle(fontFamily: "Roboto")),
-      textTheme: TextTheme(
+      textTheme: const TextTheme(
         titleMedium: TextStyle(
             fontFamily: "Lato", fontWeight: FontWeight.bold), // Bolder ListTile
       ),

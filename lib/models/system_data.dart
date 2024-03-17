@@ -7,12 +7,17 @@ class SystemData {
   final String gameweekTitle;
   final int winBonus;
   final bool ended;
+  final String season;
+
+  int highest;
   SystemData({
     required this.currentGameweek,
     required this.endsAt,
     required this.gameweekTitle,
+    required this.highest,
     required this.winBonus,
     required this.ended,
+    required this.season,
   });
 
   SystemData copyWith({
@@ -21,6 +26,7 @@ class SystemData {
     String? gameweekTitle,
     int? winBonus,
     bool? ended,
+    String? season,
   }) {
     return SystemData(
       currentGameweek: currentGameweek ?? this.currentGameweek,
@@ -28,6 +34,8 @@ class SystemData {
       gameweekTitle: gameweekTitle ?? this.gameweekTitle,
       winBonus: winBonus ?? this.winBonus,
       ended: ended ?? this.ended,
+      season: season ?? this.season,
+      highest: highest,
     );
   }
 
@@ -38,6 +46,8 @@ class SystemData {
       'gameweekTitle': gameweekTitle,
       'winBonus': winBonus,
       'ended': ended,
+      'season': season,
+      'highest': highest,
     };
   }
 
@@ -48,6 +58,8 @@ class SystemData {
       gameweekTitle: map['gameweekTitle'] as String,
       winBonus: map['winBonus'] as int,
       ended: map['ended'] as bool,
+      season: map['season'] as String,
+      highest: map['highest'] as int,
     );
   }
 
@@ -58,7 +70,7 @@ class SystemData {
 
   @override
   String toString() {
-    return 'SystemData(currentGameweek: $currentGameweek, endsAt: $endsAt, gameweekTitle: $gameweekTitle, winBonus: $winBonus, ended: $ended)';
+    return 'SystemData(highest: $highest, currentGameweek: $currentGameweek, endsAt: $endsAt, gameweekTitle: $gameweekTitle, winBonus: $winBonus, ended: $ended, season: $season)';
   }
 
   @override
@@ -69,7 +81,8 @@ class SystemData {
         other.endsAt == endsAt &&
         other.gameweekTitle == gameweekTitle &&
         other.winBonus == winBonus &&
-        other.ended == ended;
+        other.ended == ended &&
+        other.season == season;
   }
 
   @override
@@ -78,6 +91,7 @@ class SystemData {
         endsAt.hashCode ^
         gameweekTitle.hashCode ^
         winBonus.hashCode ^
-        ended.hashCode;
+        ended.hashCode ^
+        season.hashCode;
   }
 }
