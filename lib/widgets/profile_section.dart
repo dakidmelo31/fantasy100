@@ -93,16 +93,22 @@ class ProfileSection extends StatelessWidget {
                                               Row(
                                                 children: [
                                                   const Text("Hello"),
-                                                  Text(
-                                                    " Mr Melo FC",
-                                                    style: GoogleFonts.poppins(
-                                                      fontWeight:
-                                                          FontWeight.w700,
+                                                  if (data.me != null)
+                                                    Text(
+                                                      " ${data.me!.username}",
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
                                                     ),
-                                                  ),
                                                 ],
                                               ),
-                                              const Text("32,000 CFA")
+                                              if (data.me == null)
+                                                Text(" Signup to continue")
+                                              else
+                                                Text(
+                                                    "${prettyNumber(data.me!.balance)} CFA")
                                             ],
                                           )
                                         : const Column(

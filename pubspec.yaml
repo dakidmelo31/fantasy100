@@ -49,7 +49,6 @@ dependencies:
   firebase_storage: ^11.5.6
   vibration: ^1.8.3
   faker: ^2.1.0
-  flutter_barcode_scanner: ^2.0.0
   fluttertoast: ^8.2.4
   image_gallery_saver: ^2.0.3
   share_plus: ^7.2.1
@@ -84,7 +83,6 @@ dependencies:
   google_sign_in: ^6.2.1
   animator: ^3.3.0
   flutter_animate: ^4.5.0
-  google_generative_ai: ^0.2.0
   url_launcher: ^6.2.4
   youtube_player_flutter: ^8.1.2
   whatsapp_unilink: ^2.1.0

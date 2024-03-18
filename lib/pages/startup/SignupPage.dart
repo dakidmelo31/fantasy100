@@ -508,7 +508,7 @@ class _SignupPageState extends State<SignupPage> {
                               child: Text("Verify Code",
                                   style: GoogleFonts.robotoCondensed(
                                       fontSize: 20.0,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.w400))),
                         ),
                       ),

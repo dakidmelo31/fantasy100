@@ -76,6 +76,11 @@ class Globals {
 
   static bool dontAskAgain = false;
 
+  static const androidLink = "https://play.google.com";
+  static const iosLink = "https://play.google.com";
+
+  static Color black = Colors.black;
+
   static String formatTime(DateTime dateTime) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -201,7 +206,8 @@ class Globals {
   }
 
   static const primaryColor2 = Color(0xffFF0022);
-  static const primaryColor = Color(0xff2B9720);
+  static const primaryColor = Color(0xff473BF0);
+  // static const primaryColor = Color(0xff2B9720);
   // static const primaryColor = Color(0xffDD1C1A);
   static const backgroundColor = Color(0xfffcfcfc);
 
@@ -459,6 +465,7 @@ class Globals {
       colorized: true,
       color: Globals.primaryColor,
       enableVibration: false,
+      icon: "@drawable/ico",
       groupKey: Globals.appName,
     );
 
@@ -477,15 +484,14 @@ class Globals {
     debugPrint("gone through here");
     await flutterLocalNotificationsPlugin
         .show(
-      10,
-      title,
-      body,
-      notificationDetails,
-      payload: 'parking##id',
-    )
-        .then((value) {
-      toast("done sending notification");
-    }).catchError((onError) {
+          id++,
+          title,
+          body,
+          notificationDetails,
+          payload: 'parking##id',
+        )
+        .then((value) {})
+        .catchError((onError) {
       debugPrint("Error Notif: $onError");
     });
   }

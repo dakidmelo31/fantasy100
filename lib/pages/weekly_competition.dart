@@ -199,23 +199,28 @@ class _WeeklyCompetitionState extends State<WeeklyCompetition> {
                                         heroTag: "add_more2",
                                         onPressed: () async {
                                           HapticFeedback.heavyImpact();
-                                          await firestore
-                                              .collection("seasons")
-                                              .doc(Globals.season)
-                                              .collection("weeks")
-                                              .doc(Globals.gameweek)
-                                              .collection(
-                                                  Globals.competitionTitle)
-                                              .doc("room1")
-                                              .update({
-                                                "info":
-                                                    "To encourage ongoing participation and fair play, the winner of each GameWeek will be required to participate in 10 additional rounds. This means their winnings will be credited as usual, but they will be automatically enrolled in the next 10 GameWeeks."
-                                                // "endsAt": DateTime.now().add(Duration(days: 9)).millisecondsSinceEpoch
-                                              })
-                                              .then((value) =>
-                                                  toast(message: "done"))
-                                              .catchError((onError) =>
-                                                  toast(message: "error"));
+                                          Globals.localNotification(
+                                              title: "Joined Room Successfully",
+                                              body:
+                                                  "You can now contest for the best manager this week",
+                                              image: Globals.photoPlaceholder);
+                                          // await firestore
+                                          //     .collection("seasons")
+                                          //     .doc(Globals.season)
+                                          //     .collection("weeks")
+                                          //     .doc(Globals.gameweek)
+                                          //     .collection(
+                                          //         Globals.competitionTitle)
+                                          //     .doc("room1")
+                                          //     .update({
+                                          //       "info":
+                                          //           "To encourage ongoing participation and fair play, the winner of each GameWeek will be required to participate in 10 additional rounds. This means their winnings will be credited as usual, but they will be automatically enrolled in the next 10 GameWeeks."
+                                          //       // "endsAt": DateTime.now().add(Duration(days: 9)).millisecondsSinceEpoch
+                                          //     })
+                                          //     .then((value) =>
+                                          //         toast(message: "done"))
+                                          //     .catchError((onError) =>
+                                          //         toast(message: "error"));
                                         },
                                         backgroundColor: Colors.transparent,
                                         shape: const CircleBorder(),

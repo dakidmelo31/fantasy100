@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class HubbleTermsAndConditionsPage extends StatelessWidget {
+class TermsAndConditionsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

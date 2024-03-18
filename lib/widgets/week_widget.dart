@@ -359,30 +359,35 @@ class _RoomState extends State<Room> {
                                                           height: 50,
                                                           child: placeholder,
                                                         )
-                                                      : MaterialButton(
-                                                          minWidth: 170,
-                                                          color: Colors.black,
-                                                          textColor:
-                                                              Colors.white,
-                                                          shape: Globals.radius(
-                                                              26),
-                                                          height: 50,
-                                                          onPressed: () async {
-                                                            HapticFeedback
-                                                                .heavyImpact();
-                                                            bool dontAskAgain =
-                                                                true;
+                                                      : Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            MaterialButton(
+                                                              minWidth: 170,
+                                                              color: Color(
+                                                                  0xff191516),
+                                                              textColor:
+                                                                  Colors.white,
+                                                              shape: Globals
+                                                                  .radius(26),
+                                                              height: 50,
+                                                              onPressed:
+                                                                  () async {
+                                                                HapticFeedback
+                                                                    .heavyImpact();
+                                                                bool
+                                                                    dontAskAgain =
+                                                                    true;
 
-                                                            bool? outcome;
+                                                                bool? outcome;
 
-                                                            if (!Globals
-                                                                .dontAskAgain) {
-                                                              outcome =
-                                                                  await showCupertinoDialog(
-                                                                      context:
-                                                                          context,
-                                                                      builder:
-                                                                          (_) {
+                                                                if (!Globals
+                                                                    .dontAskAgain) {
+                                                                  outcome = await showCupertinoDialog(
+                                                                      context: context,
+                                                                      builder: (_) {
                                                                         return StatefulBuilder(
                                                                           builder: (context, setState) =>
                                                                               CupertinoAlertDialog(
@@ -437,42 +442,64 @@ class _RoomState extends State<Room> {
                                                                           ),
                                                                         );
                                                                       }).then((value) async {
-                                                                Globals.flipSettings(
-                                                                    field:
-                                                                        "dontAskAgain");
-                                                                if (!Globals
-                                                                        .dontAskAgain &&
-                                                                    dontAskAgain) {
-                                                                  Globals.dontAskAgain =
-                                                                      dontAskAgain;
+                                                                    if (!Globals
+                                                                            .dontAskAgain &&
+                                                                        dontAskAgain) {
+                                                                      Globals.flipSettings(
+                                                                          field:
+                                                                              "dontAskAgain");
+                                                                      Globals.dontAskAgain =
+                                                                          dontAskAgain;
+                                                                    }
+                                                                  });
                                                                 }
-                                                              });
-                                                            }
 
-                                                            if (Globals.dontAskAgain ==
-                                                                    false &&
-                                                                outcome !=
-                                                                    true) {
-                                                              return;
-                                                            }
+                                                                if (Globals.dontAskAgain ==
+                                                                        false &&
+                                                                    outcome !=
+                                                                        true) {
+                                                                  return;
+                                                                }
 
-                                                            setState(() {
-                                                              playing = true;
-                                                            });
+                                                                setState(() {
+                                                                  playing =
+                                                                      true;
+                                                                });
 
-                                                            await Future.delayed(
-                                                                const Duration(
-                                                                    seconds:
-                                                                        1));
-                                                            await data
-                                                                .enterRoom(room
-                                                                    .weekID);
-                                                            setState(() {
-                                                              playing = false;
-                                                            });
-                                                          },
-                                                          child: const Text(
-                                                              "Enter the Challenge"),
+                                                                await Future.delayed(
+                                                                    const Duration(
+                                                                        seconds:
+                                                                            1));
+                                                                await data
+                                                                    .enterRoom(room
+                                                                        .weekID);
+
+                                                                setState(() {
+                                                                  playing =
+                                                                      false;
+                                                                });
+                                                              },
+                                                              child: const Text(
+                                                                  "Enter the Challenge"),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 90,
+                                                              child: Align(
+                                                                alignment: Alignment
+                                                                    .centerRight,
+                                                                child: Text(
+                                                                  "${prettyNumber(room.participantsID.length)} Playing",
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .right,
+                                                                  maxLines: 2,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                 ),
                                               ],

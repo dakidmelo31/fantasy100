@@ -8,8 +8,13 @@ import '../models/manager.dart';
 import '../utils/globals.dart';
 
 class PlayerTile extends StatefulWidget {
-  PlayerTile({super.key, required this.index, required this.manager});
+  PlayerTile(
+      {super.key,
+      required this.index,
+      required this.manager,
+      this.doRadius = true});
   final Manager manager;
+  bool doRadius;
   int index;
 
   @override
@@ -39,8 +44,8 @@ class _PlayerTileState extends State<PlayerTile> {
             Navigator.push(context,
                 LeftTransition(child: ManagerOverlay(index: widget.index)));
           },
-          shape: Globals.radius(20),
-          color: Globals.white,
+          shape: widget.doRadius ? Globals.radius(20) : Globals.radius(0),
+          color: widget.doRadius ? Globals.white : Colors.transparent,
           elevation: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,

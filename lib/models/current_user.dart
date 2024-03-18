@@ -111,6 +111,7 @@ class CurrentUser {
       'rank': rank,
       'total': total,
       'username': username,
+      "userID": userID,
       'rankSort': rankSort,
     };
   }

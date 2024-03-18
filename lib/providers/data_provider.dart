@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hospital/models/manager.dart';
 import 'package:hospital/models/player.dart';
 import 'package:hospital/models/system_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/cash_model.dart';
 import '../models/current_user.dart';
@@ -66,7 +68,7 @@ class DataProvider extends ChangeNotifier {
 
       weeklyCompetition.add(week);
     }
-    toast(message: "done loading");
+    // toast(message: "done loading");
     for (var e in weeklyCompetition) {
       debugPrint(e.registeredPlayers.toString());
     }
@@ -91,8 +93,13 @@ class DataProvider extends ChangeNotifier {
         //     "transactions *********************************** ${event.docs.length}");
         for (var item in event.docs) {
           // //debugPrint(item.id.toString());
-          final cash = CashModel.fromMap(item.data(), item.id);
-          transactions.add(cash);
+          late final cash;
+          try {
+            cash = CashModel.fromMap(item.data(), item.id);
+            transactions.add(cash);
+          } catch (e) {
+            debugPrint("Cash failed: $e");
+          }
           // //debugPrint(cash.toString());
           // //debugPrint(transactions.length.toString());
         }
@@ -432,17 +439,29 @@ class DataProvider extends ChangeNotifier {
   }
 
   enterRoom(String weekID) async {
+    debugPrint("Now working in Room");
     final room = weeklyCompetition.firstWhere((e) => e.weekID == weekID);
-    if (me != null && me!.balance >= room.entryFee) {
+    debugPrint("Room: $room");
+    debugPrint("Me: $me");
+    if (me != null) {
+      if (me!.balance < room.entryFee) {
+        toast(
+            length: Toast.LENGTH_LONG,
+            message:
+                "You don't have enough funds to join yet. You need ${prettyNumber(room.entryFee)} CFA to participate");
+        return;
+      }
       debugPrint("WEEK ID: $weekID");
 
       if (weeklyCompetition[weeklyCompetition
               .indexWhere((element) => element.weekID == weekID)]
           .participantsID
           .contains(auth.currentUser!.uid)) {
+        debugPrint("Not Entering room");
         toast(message: "You already Joined");
         return;
       }
+      debugPrint("Now adding to Room");
 
       final DocumentReference documentReference = firestore
           .collection("seasons")
@@ -470,13 +489,37 @@ class DataProvider extends ChangeNotifier {
             return;
           }
           transaction.update(documentReference,
-              {"participants": FieldValue.increment(room.entryFee)});
+              {"balance": FieldValue.increment(-room.entryFee)});
         }).then((value) {
-          toast(message: "Joined Successfully");
+          // toast(message: "Joined Successfully");
           weeklyCompetition[weeklyCompetition
                   .indexWhere((element) => element.weekID == weekID)]
               .participantsID
               .add(auth.currentUser!.uid);
+          final transactionID = const Uuid().v4();
+          final cash = CashModel(
+              agent: "${room.weekID} Entry Fee",
+              status: "COMPLETE",
+              amount: room.entryFee,
+              date: DateTime.now().toString(),
+              deposit: true,
+              transactionId: transactionID,
+              sent: true,
+              createdAt: DateTime.now(),
+              image: Globals.photoPlaceholder);
+          firestore
+              .collection("users")
+              .doc(auth.currentUser!.uid)
+              .collection("cashHistory")
+              .doc(transactionID)
+              .set(cash.toMap())
+              .then((value) {
+            Globals.localNotification(
+                title: "You joined successfully",
+                body: room.description,
+                image: Globals.photoPlaceholder);
+            toast(message: "Joined successfully");
+          });
           notifyListeners();
         });
       });

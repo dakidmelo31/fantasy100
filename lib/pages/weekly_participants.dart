@@ -103,6 +103,7 @@ class _WeeklyParticipantsState extends State<WeeklyParticipants> {
       debugPrint("Data Exists");
     } else {
       toast(message: "Error loading, Drag to refresh");
+      return;
     }
 
     if (weekData!.participantsID.isNotEmpty) {
@@ -118,6 +119,9 @@ class _WeeklyParticipantsState extends State<WeeklyParticipants> {
         for (var item in users.docs) {
           participants.add(Manager.fromMap(item.data()));
         }
+        participants.sort(
+          (a, b) => a.score.compareTo(b.score),
+        );
       } catch (e) {
         debugPrint("Exception: $e");
         toast(message: "Failed to load players");
@@ -222,7 +226,8 @@ class _WeeklyParticipantsState extends State<WeeklyParticipants> {
                                   },
                                   child: const Icon(FontAwesomeIcons.signIn,
                                       size: 15))
-                              : userIDs.contains(auth.currentUser?.uid)
+                              : week.participantsID
+                                      .contains(auth.currentUser?.uid)
                                   ? DecoratedBox(
                                       decoration: BoxDecoration(
                                         border: Border.all(color: Colors.green),
@@ -241,6 +246,7 @@ class _WeeklyParticipantsState extends State<WeeklyParticipants> {
                                       heroTag: "add_more",
                                       onPressed: () async {
                                         HapticFeedback.heavyImpact();
+                                        data.enterRoom(week.weekID);
 // xYiOGwmqW0gLlZDvuCua7pkGGSB2
                                         // await firestore
                                         //     .collection("seasons")
@@ -289,8 +295,14 @@ class _WeeklyParticipantsState extends State<WeeklyParticipants> {
                             : SliverChildBuilderDelegate(
                                 childCount: managers.length, (context, index) {
                                 final manager = managers[index];
-                                return PlayerTile(
-                                    index: index, manager: manager);
+                                return Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 8, bottom: 8.0),
+                                  child: PlayerTile(
+                                      doRadius: false,
+                                      index: index,
+                                      manager: manager),
+                                );
                               }))
                   ],
                 ),
