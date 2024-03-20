@@ -8,7 +8,6 @@ import 'package:hospital/pages/account/EditDetail.dart';
 import 'package:hospital/pages/account/invite_friend.dart';
 import 'package:hospital/pages/account/privacy_policy.dart';
 import 'package:hospital/pages/account/terms_and_conditions.dart';
-import 'package:hospital/providers/data_manager.dart';
 import 'package:hospital/providers/data_provider.dart';
 import 'package:hospital/utils/transitions.dart';
 import 'package:local_auth/local_auth.dart';
@@ -76,6 +75,7 @@ class _MyAccountState extends State<MyAccount> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("dsata");
     final size = getSize(context);
     final data = Provider.of<DataProvider>(context, listen: true);
     return Scaffold(

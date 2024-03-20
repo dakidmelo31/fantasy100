@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_count_down/date_count_down.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,11 +8,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hospital/pages/chat/gemini_chat.dart';
 import 'package:hospital/pages/confirm_team.dart';
 import 'package:hospital/pages/startup/SignupPage.dart';
 import 'package:hospital/pages/startup/wave_screen.dart';
-import 'package:hospital/pages/transactions/payment_history.dart';
 import 'package:hospital/pages/transactions/topup_page.dart';
 import 'package:hospital/pages/transactions/transaction_history.dart';
 import 'package:hospital/providers/data_provider.dart';
